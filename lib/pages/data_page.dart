@@ -19,35 +19,36 @@ class DataPage extends StatelessWidget {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              StreamBuilder<double>(
-                stream: value.getCap('Latency')?.getStream(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<double> snapshot) {
+              StreamBuilder<List<double>>(
+                stream: value.getCapture('Latency')?.getStream(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<double>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
-                      return Text("NONE");
+                      return Text('NONE');
                     case ConnectionState.waiting:
-                      return Text("WAITING");
+                      return Text('WAITING');
                     case ConnectionState.active:
-                      return Text("Latency: ${snapshot.data} ms");
+                      return Text('Latency: ${snapshot.data?.first} ms');
                     case ConnectionState.done:
-                      return Text("DONE");
+                      return Text('DONE');
                   }
                 },
               ),
-              StreamBuilder<double>(
-                stream: value.getCap('Viewers')?.getStream(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<double> snapshot) {
+              StreamBuilder<List<double>>(
+                stream: value.getCapture('Viewers')?.getStream(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<double>> snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
-                      return Text("NONE");
+                      return Text('NONE');
                     case ConnectionState.waiting:
-                      return Text("WAITING");
+                      return Text('WAITING');
                     case ConnectionState.active:
-                      return Text("Current Viewers: ${snapshot.data?.round()}");
+                      return Text(
+                          'Current Viewers: ${snapshot.data?.first.round()}');
                     case ConnectionState.done:
-                      return Text("DONE");
+                      return Text('DONE');
                   }
                 },
               )
@@ -73,7 +74,7 @@ class DataConsumer extends StatelessWidget {
 }
 
 class DataExpander extends StatelessWidget {
-  final List<StreamCap> items;
+  final List<NetFieldCapture<List<double>>> items;
 
   const DataExpander({
     super.key,
@@ -91,7 +92,7 @@ class DataExpander extends StatelessWidget {
   }
 
   // Build a hierarchical tree from the list of items
-  Map<String, dynamic> _buildTree(List<StreamCap> items) {
+  Map<String, dynamic> _buildTree(List<NetFieldCapture<List<double>>> items) {
     final Map<String, dynamic> root = {};
 
     for (var item in items) {
@@ -101,7 +102,7 @@ class DataExpander extends StatelessWidget {
       for (var i = 0; i < parts.length; i++) {
         final part = parts[i];
 
-        // If this is the last part, add the payload to the list
+        // If this is the last part, add the netfieldcapture to the list
         if (i == parts.length - 1) {
           if (!currentLevel.containsKey('items')) {
             currentLevel['items'] = [];
@@ -143,15 +144,16 @@ class DataExpander extends StatelessWidget {
   List<dynamic> _buildListItems(List items, int level) {
     return items.map(
       (item) {
-        assert(item.runtimeType == StreamCap);
-        return StreamBuilder<double>(
+        assert(item.runtimeType == NetFieldCapture<List<double>>);
+        return StreamBuilder<List<double>>(
           stream: item.getStream(),
-          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<List<double>> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text("NONE");
+                return Text('NONE');
               case ConnectionState.waiting:
-                return Text("WAITING");
+                return Text('WAITING');
               case ConnectionState.active:
                 final Color? textColor = item.stale ? Colors.red : null;
                 return Padding(
@@ -160,18 +162,18 @@ class DataExpander extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        item.topic.split("/").last,
+                        item.topic.split('/').last,
                         style: Theme.of(context)
                             .textTheme
                             .labelSmall
                             ?.copyWith(color: textColor),
                       ),
-                      Text("${snapshot.data} ${item.unit}")
+                      Text('${snapshot.data?.join(',')} ${item.unit}')
                     ],
                   ),
                 );
               case ConnectionState.done:
-                return Text("DONE");
+                return Text('DONE');
             }
           },
         );

@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => CapModel(),
+      create: (context) => CapModel('http://192.168.0.82:8000'),
       child: MaterialApp(
       title: 'Cool',
       initialRoute: '/',

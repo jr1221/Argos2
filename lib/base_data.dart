@@ -5,70 +5,93 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
-class StreamCap {
-  final StreamController<double> _streamAdd = StreamController.broadcast();
+/// A class for capturing and processing each point coming from a specific topic
+class NetFieldCapture<T> {
+  /// the stream of data coming from the netfield
+  final StreamController<T> _stream = StreamController.broadcast();
+
+  /// the topic of the netfield
   final String topic;
+
+  /// the unit of the netfield
   final String unit;
-  double? last;
+
+  /// the latest value placed in the stream
+  T? last;
+
+  /// whether the item is stale (only checked upon initially listening)
   bool stale = false;
 
-  StreamCap(this.topic, this.unit) {
-    cacheCallback() {
+  NetFieldCapture(this.topic, this.unit) {
+    // when listening is established, mark stale (so un-stale can happen)
+    // add the last item to the stream in case the source is stale
+    _stream.onListen = () {
       stale = true;
-      _streamAdd.add(last ?? -1);
-    }
-
-    _streamAdd.onListen = cacheCallback;
+      if (last != null) {
+        _stream.add(last as T);
+      }
+    };
   }
 
-  addValue(value) {
-    _streamAdd.add(value);
+  /// adds a value to the stream
+  _addValue(T value) {
+    _stream.add(value);
     last = value;
     stale = false;
   }
 
-  Stream<double> getStream() => _streamAdd.stream;
+  /// fetches the underlying stream for use in streambuilders
+  Stream<T> getStream() => _stream.stream;
 
   @override
   String toString() {
-    return 'Topic: $topic, Last Value: $last $unit';
+    return 'Topic: $topic, Last Value: $last $unit - Stale: $stale';
   }
 }
 
+/// a model to capture data from the socket and manage a bunch of streams,
+/// 1 per topic
 class CapModel extends ChangeNotifier {
-  final SplayTreeMap<String, StreamCap> cap = SplayTreeMap();
+  /// a map corresponding topic --> NetFieldCapture
+  final SplayTreeMap<String, NetFieldCapture<List<double>>> _cap =
+      SplayTreeMap();
 
-  StreamCap? getCap(String topic) {
-    return cap[topic];
+  /// get a specifc capture object given a topic
+  NetFieldCapture<List<double>>? getCapture(String topic) {
+    return _cap[topic];
   }
 
-  List<StreamCap> getCaps() {
-    return cap.values.toList();
+  /// get all of the capture objects for displaying every datapoint
+  List<NetFieldCapture<List<double>>> getCaps() {
+    return _cap.values.toList();
   }
 
-  CapModel() {
-    io.Socket socket = io.io('http://192.168.0.82:8000',
+  CapModel(dynamic uri) {
+    // establish a connection
+    io.Socket socket = io.io(uri,
         io.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
       print('Connected to socket!');
-      socket.emit('msg', 'test');
     });
 
     //When an event received from server, data is added to the stream
     socket.on('message', (data) {
-      final val = ClientData.fromJson(jsonDecode(data));
-      if (!cap.containsKey(val.name)) {
-        cap[val.name] = StreamCap(val.name, val.unit);
-        cap[val.name]?.addValue(val.values.first);
+      final decodedVal = ClientData.fromJson(jsonDecode(data));
+      // do special case if its the first time this value has been seen
+      if (!_cap.containsKey(decodedVal.name)) {
+        _cap[decodedVal.name] = NetFieldCapture(decodedVal.name, decodedVal.unit);
+        _cap[decodedVal.name]?._addValue(decodedVal.values);
+        // we must rebuild the whole UI on a new topic
         notifyListeners();
       } else {
-        cap[val.name]?.addValue(val.values.first);
+        _cap[decodedVal.name]?._addValue(decodedVal.values);
       }
     });
     socket.onDisconnect((_) => print('disconnect'));
   }
 }
 
+/// Socket wire format, JSON
 class ClientData {
   final int runId;
   final String name;
