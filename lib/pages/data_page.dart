@@ -12,6 +12,14 @@ class DataPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Data Page'),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.settings,
+            ),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+          ),
+        ],
       ),
       body: Center(child: DataConsumer()),
       bottomSheet: Consumer<CapModel>(
@@ -181,3 +189,4 @@ class DataExpander extends StatelessWidget {
     ).toList();
   }
 }
+

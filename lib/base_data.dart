@@ -70,6 +70,7 @@ class CapModel extends ChangeNotifier {
     // establish a connection
     io.Socket socket = io.io(uri,
         io.OptionBuilder().setTransports(['websocket']).build());
+    print('Connecting to $uri');
     socket.onConnect((_) {
       print('Connected to socket!');
     });
