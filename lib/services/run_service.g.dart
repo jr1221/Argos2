@@ -6,7 +6,7 @@ part of 'run_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$runHandlerHash() => r'bfec5df8a5e50aec11a33f29f5576030c7bcb907';
+String _$runHandlerHash() => r'658ba7a0a167b4d464da910cd4f1c3fee9acfcad';
 
 /// See also [RunHandler].
 @ProviderFor(RunHandler)

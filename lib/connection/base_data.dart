@@ -2,19 +2,21 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:argos2/connection/server_data.pb.dart';
-import 'package:argos2/global_settings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt5_client/mqtt5_client.dart';
 import 'package:mqtt5_client/mqtt5_server_client.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+
+import '../global_settings.dart';
+import 'server_data.pb.dart';
 
 part 'base_data.g.dart';
 
 /// A class for capturing and processing each point coming from a specific topic
 class NetFieldCapture<T> {
   /// the stream of data coming from the netfield
-  final StreamController<T> _stream = StreamController.broadcast();
+  final StreamController<T> _stream = StreamController<T>.broadcast();
 
   /// the topic of the netfield
   final String topic;
@@ -40,7 +42,7 @@ class NetFieldCapture<T> {
   }
 
   /// adds a value to the stream
-  addValue(T value) {
+  void addValue(final T value) {
     _stream.add(value);
     last = value;
     stale = false;
@@ -50,90 +52,111 @@ class NetFieldCapture<T> {
   Stream<T> getStream() => _stream.stream;
 
   @override
-  String toString() {
-    return 'Topic: $topic, Last Value: $last $unit - Stale: $stale';
+  String toString() => 'Topic: $topic, Last Value: $last $unit - Stale: $stale';
+
+  Future<void> dispose() async {
+    await _stream.close();
   }
 }
 
 @riverpod
-class CapModel extends _$CapModel {
-  @override
-  Stream<Map<String, NetFieldCapture<List<double>>>> build() async* {
-    final con = ref.watch(connectionControlProvider);
+Stream<Map<String, NetFieldCapture<List<double>>>> capModelHolder(
+  final Ref ref,
+) async* {
+  final Uri conUri = ref.watch(
+    connectionControlProvider.select((final ConnectionProps it) => it.uri),
+  );
+  final bool useMqtt = ref.watch(
+    connectionControlProvider.select((final ConnectionProps it) => it.useMqtt),
+  );
 
-    late MqttServerClient client;
 
-    final SplayTreeMap<String, NetFieldCapture<List<double>>> cap =
-        SplayTreeMap();
+  MqttServerClient? client;
+  io.Socket? socket;
+  final SplayTreeMap<String, NetFieldCapture<List<double>>> cap =
+      SplayTreeMap<String, NetFieldCapture<List<double>>>();
+  // cleanup the netfield caps
+  ref.onDispose(() async {
+    for (final NetFieldCapture<List<double>> entry in cap.values) {
+      await entry.dispose();
+    }
+    print('destroying cap');
+    cap.clear();
+  });
 
-    StreamController<Map<String, NetFieldCapture<List<double>>>>
-        streamController = StreamController();
-    print('triggered');
+  final StreamController<Map<String, NetFieldCapture<List<double>>>>
+      streamController =
+      StreamController<Map<String, NetFieldCapture<List<double>>>>();
+  ref.onDispose(streamController.close);
 
-    if (con.useMqtt) {
-      client = MqttServerClient.withPort(
-          con.uri.host,
-          'Argos2Client-${DateTime.now().millisecondsSinceEpoch}',
-          con.uri.port);
-      print(con.uri.port);
-      //client.logging(on: true);
-      client.keepAlivePeriod = 5;
-      client.autoReconnect = true;
-      client.resubscribeOnAutoReconnect = true;
-      final conn = MqttConnectMessage().startClean();
-      client.connectionMessage = conn;
+  if (useMqtt) {
+    client = MqttServerClient.withPort(
+      conUri.host,
+      'Argos2Client-${DateTime.now().millisecondsSinceEpoch}',
+      conUri.port,
+    );
+    ref.onDispose(() {
+      client?.disconnect();
+      client = null;
+    });
+    //client.logging(on: true);
+    client!.keepAlivePeriod = 5;
+    client!.autoReconnect = true;
+    client!.resubscribeOnAutoReconnect = true;
+    final MqttConnectMessage conn = MqttConnectMessage().startClean();
+    client!.connectionMessage = conn;
 
-      try {
-        print(client.port);
-        await client.connect();
-      } on Exception catch (e) {
-        print('EXAMPLE::client exception - $e');
-        client.disconnect();
+    await client!.connect();
+
+    client!.subscribe('#', MqttQos.atMostOnce);
+    client!.updates.listen((final List<MqttReceivedMessage<MqttMessage>> c) {
+      final MqttPublishMessage recMess = c[0].payload as MqttPublishMessage;
+      final ServerData payload =
+          ServerData.fromBuffer(recMess.payload.message!);
+      // do special case if its the first time this value has been seen
+      if (!cap.containsKey(c[0].topic)) {
+        cap[c[0].topic!] =
+            NetFieldCapture<List<double>>(c[0].topic!, payload.unit);
+        cap[c[0].topic!]?.addValue(payload.values);
+        streamController.add(cap);
+        // we must rebuild the whole UI on a new topic
+      } else {
+        cap[c[0].topic!]?.addValue(payload.values);
       }
+    });
 
-      client.subscribe('#', MqttQos.atMostOnce);
-      client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-        final recMess = c[0].payload as MqttPublishMessage;
-        final payload = ServerData.fromBuffer(recMess.payload.message!);
-        //print(payload);
-        // do special case if its the first time this value has been seen
-        if (!cap.containsKey(c[0].topic)) {
-          cap[c[0].topic!] = NetFieldCapture(c[0].topic!, payload.unit);
-          cap[c[0].topic!]?.addValue(payload.values);
-          streamController.add(cap);
-          // we must rebuild the whole UI on a new topic
-        } else {
-          cap[c[0].topic!]?.addValue(payload.values);
-        }
-      });
-
-      yield* streamController.stream;
-    } else {
-      io.Socket socket = io.io(con.uri.toString(),
-          io.OptionBuilder().setTransports(['websocket']).build());
-      print('Connecting to ${con.uri}');
-      socket.onConnect((_) {
+    yield* streamController.stream;
+  } else {
+    socket = io.io(
+      conUri.toString(),
+      io.OptionBuilder().setTransports(<String>['websocket']).build(),
+    );
+    ref.onDispose(() {
+      socket?.disconnect();
+      socket?.dispose();
+    });
+    print('Connecting to $conUri');
+    socket
+      ..onConnect((final _) {
         print('Connected to socket!');
-      });
-
+      })
       //When an event received from server, data is added to the stream
-      socket.on('message', (data) {
-        final decodedVal = ClientData.fromJson(jsonDecode(data));
+      ..on('message', (final dynamic data) {
+        final ClientData decodedVal = ClientData.fromJson(jsonDecode(data));
         // do special case if its the first time this value has been seen
         if (!cap.containsKey(decodedVal.name)) {
           cap[decodedVal.name] =
-              NetFieldCapture(decodedVal.name, decodedVal.unit);
+              NetFieldCapture<List<double>>(decodedVal.name, decodedVal.unit);
           cap[decodedVal.name]?.addValue(decodedVal.values);
           streamController.add(cap);
           // we must rebuild the whole UI on a new topic
         } else {
           cap[decodedVal.name]?.addValue(decodedVal.values);
         }
-      });
-      socket.onDisconnect((_) => print('disconnect'));
+      })
+      ..onDisconnect((final _) => print('disconnect'));
 
-      yield* streamController.stream;
-    }
+    yield* streamController.stream;
   }
 }
 
@@ -147,7 +170,7 @@ class ClientData {
 
   ClientData(this.runId, this.name, this.unit, this.values, this.timestamp);
 
-  ClientData.fromJson(Map<String, dynamic> json)
+  ClientData.fromJson(final Map<String, dynamic> json)
       : runId = json['runId'] as int,
         name = json['name'] as String,
         unit = json['unit'] as String,

@@ -6,7 +6,27 @@ part of 'global_settings.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$connectionControlHash() => r'cc6a99c7d32c18e98e07fb8513d65990f68f7e6a';
+String _$sharedPrefsInstanceHash() =>
+    r'de688d03c2a28b73a64d47913cf4a3e5d216d7a6';
+
+/// See also [sharedPrefsInstance].
+@ProviderFor(sharedPrefsInstance)
+final sharedPrefsInstanceProvider =
+    AutoDisposeFutureProvider<SharedPreferences>.internal(
+  sharedPrefsInstance,
+  name: r'sharedPrefsInstanceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$sharedPrefsInstanceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SharedPrefsInstanceRef
+    = AutoDisposeFutureProviderRef<SharedPreferences>;
+String _$connectionControlHash() => r'fd1a50e566c55214cfdaea7b91dfc306c913d065';
 
 /// See also [ConnectionControl].
 @ProviderFor(ConnectionControl)
