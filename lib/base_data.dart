@@ -66,6 +66,12 @@ class CapModel extends ChangeNotifier {
     return _cap.values.toList();
   }
 
+  /// get all active car command leases
+  List<NetFieldCapture<List<double>>> getCommandCaps() {
+    return _cap.values.where((val) => val.topic.startsWith('Calypso/Bidir/State/')).toList();
+  }
+
+
   CapModel(dynamic uri) {
     // establish a connection
     io.Socket socket = io.io(uri,

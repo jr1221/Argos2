@@ -8,71 +8,6 @@ class DataPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Data Page'),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.settings,
-            ),
-            onPressed: () => Navigator.pushNamed(context, '/settings'),
-          ),
-        ],
-      ),
-      body: Center(child: DataConsumer()),
-      bottomSheet: Consumer<CapModel>(
-        builder: (BuildContext context, CapModel value, Widget? child) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              StreamBuilder<List<double>>(
-                stream: value.getCapture('Latency')?.getStream(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<double>> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                      return Text('NONE');
-                    case ConnectionState.waiting:
-                      return Text('WAITING');
-                    case ConnectionState.active:
-                      return Text('Latency: ${snapshot.data?.first} ms');
-                    case ConnectionState.done:
-                      return Text('DONE');
-                  }
-                },
-              ),
-              StreamBuilder<List<double>>(
-                stream: value.getCapture('Viewers')?.getStream(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<double>> snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                      return Text('NONE');
-                    case ConnectionState.waiting:
-                      return Text('WAITING');
-                    case ConnectionState.active:
-                      return Text(
-                          'Current Viewers: ${snapshot.data?.first.round()}');
-                    case ConnectionState.done:
-                      return Text('DONE');
-                  }
-                },
-              )
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class DataConsumer extends StatelessWidget {
-  const DataConsumer({super.key});
-
-  @override
-  Widget build(BuildContext context) {
     return Consumer<CapModel>(
       builder: (BuildContext context, CapModel value, Widget? child) {
         return DataExpander(items: value.getCaps());
@@ -81,20 +16,27 @@ class DataConsumer extends StatelessWidget {
   }
 }
 
-class DataExpander extends StatelessWidget {
+class DataExpander extends StatefulWidget {
   final List<NetFieldCapture<List<double>>> items;
+  const DataExpander({super.key, required this.items});
 
-  const DataExpander({
-    super.key,
-    required this.items,
-  });
+  @override
+  State<DataExpander> createState() => _DataExpanderState();
+}
+
+class _DataExpanderState extends State<DataExpander> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     // Build a tree structure from the topics
-    final Map<String, dynamic> tree = _buildTree(items);
+    final Map<String, dynamic> tree = _buildTree(widget.items);
 
     return ListView(
+      shrinkWrap: true,
       children: _buildExpansionTiles(tree, 0),
     );
   }
@@ -129,7 +71,7 @@ class DataExpander extends StatelessWidget {
     return root;
   }
 
-// Build the ExpansionTiles recursively
+  // Build the ExpansionTiles recursively
   List<Widget> _buildExpansionTiles(Map<String, dynamic> tree, int level) {
     return tree.entries.where((entry) => entry.key != 'items').map(
       (entry) {
@@ -169,12 +111,17 @@ class DataExpander extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        item.topic.split('/').last,
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelSmall
-                            ?.copyWith(color: textColor),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {});
+                        },
+                        child: Text(
+                          item.topic.split('/').last,
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(color: textColor),
+                        ),
                       ),
                       Text('${snapshot.data?.join(',')} ${item.unit}')
                     ],
@@ -189,4 +136,3 @@ class DataExpander extends StatelessWidget {
     ).toList();
   }
 }
-
