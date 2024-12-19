@@ -1,15 +1,22 @@
+import 'package:argos2/global_settings.dart';
 import 'package:argos2/services/car_command.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../base_data.dart';
+import '../connection/base_data.dart';
 
-class CarCommandPage extends StatelessWidget {
+class CarCommandPage extends ConsumerWidget {
   const CarCommandPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final items = context.watch<CapModel>().getCommandCaps();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final items = ref
+        .watch(capModelProvider)
+        .value!
+        .values
+        .where((val) => val.topic.startsWith('Calypso/Bidir/State/'))
+        .toList();
+
     Map<String, List<NetFieldCapture<List<double>>>> i = {};
     for (final item in items) {
       if (i[item.topic.getKey()] != null) {
@@ -29,16 +36,16 @@ class CarCommandPage extends StatelessWidget {
   }
 }
 
-class CommandPkg extends StatefulWidget {
+class CommandPkg extends ConsumerStatefulWidget {
   final MapEntry<String, List<NetFieldCapture<List<double>>>> topics;
 
   const CommandPkg({super.key, required this.topics});
 
   @override
-  State<CommandPkg> createState() => _CommandPkgState();
+  ConsumerState<CommandPkg> createState() => _CommandPkgState();
 }
 
-class _CommandPkgState extends State<CommandPkg> {
+class _CommandPkgState extends ConsumerState<CommandPkg> {
   final _sendFormKey = GlobalKey<FormState>();
 
   final List<double> dataSend = [];
@@ -101,7 +108,7 @@ class _CommandPkgState extends State<CommandPkg> {
                                     child: Text(
                                         style: Theme.of(context)
                                             .textTheme
-                                            .labelSmall
+                                            .bodyMedium
                                             ?.copyWith(color: textColor),
                                         '${snapshot.data?.join(',')} ${widget.topics.value[index].unit}'));
                               case ConnectionState.done:
@@ -117,32 +124,74 @@ class _CommandPkgState extends State<CommandPkg> {
             ),
           ),
           ElevatedButton(
-              onPressed: () async {
-                if (_sendFormKey.currentState!.validate()) {
-                  _sendFormKey.currentState?.save();
-                  final errored =
-                      await sendConfigCommand(widget.topics.key, dataSend);
-                  dataSend.clear();
-                  if (!context.mounted) return;
-                  if (errored) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Failed to send data to car!')),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text(
-                              'Processing data, check the current values to ensure car successfully updated!')),
-                    );
-                  }
-                }
-              },
-              child: const Text('Send')),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              onPressed: ref.watch(connectionControlProvider).useMqtt
+                  ? null
+                  : () async {
+                      if (_sendFormKey.currentState!.validate()) {
+                        final res = await _confirmationDialog(
+                            context, widget.topics.key);
+                        if (res != null && res) {
+                          _sendFormKey.currentState?.save();
+                          final errored = await sendConfigCommand(
+                              widget.topics.key, dataSend);
+                          dataSend.clear();
+                          if (!context.mounted) return;
+                          if (errored) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Failed to send data to car!')),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Processing data, check the current values to ensure car successfully updated!')),
+                            );
+                          }
+                        }
+                      }
+                    },
+              child: const Text('Send to Car')),
         ],
       ),
     );
   }
+}
+
+Future<bool?> _confirmationDialog(BuildContext context, String key) async {
+  return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          icon: Icon(
+            Icons.warning,
+            size: 48.0,
+          ),
+          title: const Text('Confirm command to send to car!'),
+          content: Text('Changing setting: $key'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text(
+                  'Yes, send to car',
+                  textAlign: TextAlign.end,
+                )),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'no, go back',
+                  textAlign: TextAlign.end,
+                ))
+          ],
+        );
+      });
 }
 
 extension GetKeys on String {

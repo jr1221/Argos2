@@ -1,8 +1,9 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 const String BACKEND_URI_KEY = 'v1_BackendUri';
 const String BACKEND_URI_DEFAULT = 'http://192.168.100.11:8000';
+const String MQTT_URI_KEY = 'v1_MqttUri';
+const String MQTT_URI_DEFAULT = 'mqtt://192.168.100.11:1883';
 
 class SharedPreferencesClass {
   static Future<Object?> restore(String key) async {

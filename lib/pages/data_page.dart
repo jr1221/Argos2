@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../base_data.dart';
+import '../connection/base_data.dart';
 
-class DataPage extends StatelessWidget {
+class DataPage extends ConsumerWidget {
   const DataPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer<CapModel>(
-      builder: (BuildContext context, CapModel value, Widget? child) {
-        return DataExpander(items: value.getCaps());
-      },
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final caps = ref.watch(capModelProvider);
+    return switch (caps) {
+      AsyncData(:final value) => DataExpander(items: value.values.toList()),
+      AsyncError(:final error) => Text('Oops $error'),
+      _ => const CircularProgressIndicator(),
+    };
   }
 }
 
@@ -119,7 +120,7 @@ class _DataExpanderState extends State<DataExpander> {
                           item.topic.split('/').last,
                           style: Theme.of(context)
                               .textTheme
-                              .labelSmall
+                              .bodyMedium
                               ?.copyWith(color: textColor),
                         ),
                       ),
