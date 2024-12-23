@@ -10,15 +10,21 @@ class CarCommandPage extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final List<NetFieldCapture<List<double>>> items = ref
+    final List<NetFieldCapture<List<double>>>? items = ref
         .watch(capModelHolderProvider)
-        .value!
-        .values
+        .value
+        ?.values
         .where(
           (final NetFieldCapture<List<double>> val) =>
               val.topic.startsWith('Calypso/Bidir/State/'),
         )
         .toList();
+
+    if (items == null || items.isEmpty) {
+      return const Text(
+        'Command mode not enabled or connectivity not established!',
+      );
+    }
 
     final Map<String, List<NetFieldCapture<List<double>>>> i =
         <String, List<NetFieldCapture<List<double>>>>{};
@@ -105,33 +111,24 @@ class _CommandPkgState extends ConsumerState<CommandPkg> {
                             final BuildContext context,
                             final AsyncSnapshot<List<double>> snapshot,
                           ) {
-                            switch (snapshot.connectionState) {
-                              case ConnectionState.none:
-                                return const Text('NONE');
-                              case ConnectionState.waiting:
-                                return const Text('WAITING');
-                              case ConnectionState.active:
-                                final Color? textColor =
-                                    widget.topics.value[index].stale
-                                        ? Colors.red
-                                        : null;
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 16.0,
-                                    right: 32.0,
-                                  ),
-                                  child: Text(
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(color: textColor),
-                                    '${snapshot.data?.join(',')} '
-                                    '${widget.topics.value[index].unit}',
-                                  ),
-                                );
-                              case ConnectionState.done:
-                                return const Text('DONE');
-                            }
+                            final Color? textColor =
+                                widget.topics.value[index].stale
+                                    ? Colors.red
+                                    : null;
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                left: 16.0,
+                                right: 32.0,
+                              ),
+                              child: Text(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: textColor),
+                                '${snapshot.data?.join(',')} '
+                                '${widget.topics.value[index].unit}',
+                              ),
+                            );
                           },
                         ),
                       ),

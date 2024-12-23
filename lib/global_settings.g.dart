@@ -9,7 +9,9 @@ part of 'global_settings.dart';
 String _$sharedPrefsInstanceHash() =>
     r'de688d03c2a28b73a64d47913cf4a3e5d216d7a6';
 
-/// See also [sharedPrefsInstance].
+/// Get a shared preferences instance
+///
+/// Copied from [sharedPrefsInstance].
 @ProviderFor(sharedPrefsInstance)
 final sharedPrefsInstanceProvider =
     AutoDisposeFutureProvider<SharedPreferences>.internal(
@@ -42,5 +44,22 @@ final connectionControlProvider =
 );
 
 typedef _$ConnectionControl = AutoDisposeNotifier<ConnectionProps>;
+String _$favoriteTopicsManagerHash() =>
+    r'c506daa4619665cc1772bd5696858000b127547c';
+
+/// See also [FavoriteTopicsManager].
+@ProviderFor(FavoriteTopicsManager)
+final favoriteTopicsManagerProvider = AutoDisposeNotifierProvider<
+    FavoriteTopicsManager, SplayTreeSet<String>>.internal(
+  FavoriteTopicsManager.new,
+  name: r'favoriteTopicsManagerProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$favoriteTopicsManagerHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$FavoriteTopicsManager = AutoDisposeNotifier<SplayTreeSet<String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

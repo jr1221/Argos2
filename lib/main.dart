@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'global_settings.dart';
 import 'pages/car_command_page.dart';
 import 'pages/data_page.dart';
+import 'pages/favorites_page.dart';
 import 'pages/settings_page.dart';
 import 'persistent_widgets.dart';
 
@@ -69,6 +70,7 @@ class _MainScreensState extends ConsumerState<MainScreens> {
       ),
       body: <Widget>[
         const DataPage(),
+        const FavoritesPage(),
         const CarCommandPage(),
       ][currentPageIndex],
       bottomSheet: useMqtt ? null : const BottomSysInfo(),
@@ -83,6 +85,10 @@ class _MainScreensState extends ConsumerState<MainScreens> {
           NavigationDestination(
             icon: Icon(Icons.data_exploration_outlined),
             label: 'Data',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.star_outlined),
+            label: 'Favorites',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_remote_outlined),

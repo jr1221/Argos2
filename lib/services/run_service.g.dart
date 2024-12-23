@@ -8,7 +8,9 @@ part of 'run_service.dart';
 
 String _$runHandlerHash() => r'658ba7a0a167b4d464da910cd4f1c3fee9acfcad';
 
-/// See also [RunHandler].
+/// handle the /runs endpoint
+///
+/// Copied from [RunHandler].
 @ProviderFor(RunHandler)
 final runHandlerProvider =
     AutoDisposeAsyncNotifierProvider<RunHandler, List<PublicRun>>.internal(
