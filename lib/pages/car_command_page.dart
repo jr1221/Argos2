@@ -115,18 +115,24 @@ class _CommandPkgState extends ConsumerState<CommandPkg> {
                                 widget.topics.value[index].stale
                                     ? Colors.red
                                     : null;
+                            final Iterable<String>? data = snapshot.data
+                                ?.map((final double e) => e.toStringAsFixed(3));
                             return Padding(
                               padding: const EdgeInsets.only(
                                 left: 16.0,
-                                right: 32.0,
+                                right: 8.0,
                               ),
-                              child: Text(
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(color: textColor),
-                                '${snapshot.data?.join(',')} '
-                                '${widget.topics.value[index].unit}',
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(color: textColor),
+                                    '${data?.join('\n')}',
+                                  ),
+                                  Text(widget.topics.value[index].unit),
+                                ],
                               ),
                             );
                           },

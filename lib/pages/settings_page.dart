@@ -131,8 +131,8 @@ class _UriFormState extends ConsumerState<UriForm> {
               decoration: InputDecoration(
                 icon: Icon(widget.icon),
                 labelText: widget.labelText,
-                helperText: 'Right click to use default'
-              ,),
+                helperText: 'Right click to use default',
+              ),
               onTapOutside: (final PointerDownEvent event) {
                 FocusScope.of(context).unfocus();
               },

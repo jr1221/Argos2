@@ -116,7 +116,7 @@ class _DataExpanderState extends ConsumerState<DataExpander> {
           )
           .map(
             (final MapEntry<String, dynamic> entry) => Padding(
-              padding: EdgeInsets.only(left: level * 16.0),
+              padding: EdgeInsets.only(left: level * 8.0),
               child: ExpansionTile(
                 title: Text(entry.key),
                 children: <Widget>[
@@ -172,8 +172,10 @@ class DataPoint extends ConsumerWidget {
       ) {
         final Color? textColor = item.stale ? Colors.red : null;
         final IconData isFavIcon = isFav ? Icons.star : Icons.star_border;
+        final Iterable<String>? data =
+        snapshot.data?.map((final double e) => e.toStringAsFixed(4));
         return Padding(
-          padding: EdgeInsets.only(left: level * 16.0, right: 32.0),
+          padding: EdgeInsets.only(left: level * 8.0, right: 4.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -198,12 +200,21 @@ class DataPoint extends ConsumerWidget {
                   ),
                 ],
               ),
-              Text(
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: textColor),
-                '${snapshot.data?.join(',')} ${item.unit}',
+              Row(
+                children: <Widget>[
+                  Text(
+                    softWrap: true,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: textColor),
+                    '${data?.join('\n')}',
+                  ),
+                  const SizedBox(
+                    width: 4.0,
+                  ),
+                  Text(item.unit),
+                ],
               ),
             ],
           ),
