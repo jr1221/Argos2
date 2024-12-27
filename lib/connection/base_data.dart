@@ -60,7 +60,7 @@ class NetFieldCapture<T> {
 }
 
 @riverpod
-Stream<Map<String, NetFieldCapture<List<double>>>> capModelHolder(
+Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
   final Ref ref,
 ) async* {
   final Uri conUri = ref.watch(
@@ -72,20 +72,20 @@ Stream<Map<String, NetFieldCapture<List<double>>>> capModelHolder(
 
   MqttServerClient? client;
   io.Socket? socket;
-  final SplayTreeMap<String, NetFieldCapture<List<double>>> cap =
-      SplayTreeMap<String, NetFieldCapture<List<double>>>();
+  final SplayTreeMap<String, NetFieldCapture<(List<double>, DateTime)>> cap =
+      SplayTreeMap<String, NetFieldCapture<(List<double>, DateTime)>>();
   // cleanup the netfield caps
   ref.onDispose(() async {
-    for (final NetFieldCapture<List<double>> entry in cap.values) {
+    for (final NetFieldCapture<(List<double>, DateTime)> entry in cap.values) {
       await entry.dispose();
     }
     print('destroying cap');
     cap.clear();
   });
 
-  final StreamController<Map<String, NetFieldCapture<List<double>>>>
-      streamController =
-      StreamController<Map<String, NetFieldCapture<List<double>>>>();
+  final StreamController<Map<String, NetFieldCapture<(List<double>, DateTime)>>>
+      streamController = StreamController<
+          Map<String, NetFieldCapture<(List<double>, DateTime)>>>();
   ref.onDispose(streamController.close);
 
   if (useMqtt) {
@@ -114,13 +114,25 @@ Stream<Map<String, NetFieldCapture<List<double>>>> capModelHolder(
           ServerData.fromBuffer(recMess.payload.message!);
       // do special case if its the first time this value has been seen
       if (!cap.containsKey(c[0].topic)) {
-        cap[c[0].topic!] =
-            NetFieldCapture<List<double>>(c[0].topic!, payload.unit);
-        cap[c[0].topic!]?.addValue(payload.values);
+        cap[c[0].topic!] = NetFieldCapture<(List<double>, DateTime)>(
+          c[0].topic!,
+          payload.unit,
+        );
+        cap[c[0].topic!]?.addValue(
+          (
+            payload.values,
+            DateTime.fromMicrosecondsSinceEpoch(payload.timeUs.toInt())
+          ),
+        );
         streamController.add(cap);
         // we must rebuild the whole UI on a new topic
       } else {
-        cap[c[0].topic!]?.addValue(payload.values);
+        cap[c[0].topic!]?.addValue(
+          (
+            payload.values,
+            DateTime.fromMicrosecondsSinceEpoch(payload.timeUs.toInt())
+          ),
+        );
       }
     });
 
@@ -144,13 +156,25 @@ Stream<Map<String, NetFieldCapture<List<double>>>> capModelHolder(
         final ClientData decodedVal = ClientData.fromJson(jsonDecode(data));
         // do special case if its the first time this value has been seen
         if (!cap.containsKey(decodedVal.name)) {
-          cap[decodedVal.name] =
-              NetFieldCapture<List<double>>(decodedVal.name, decodedVal.unit);
-          cap[decodedVal.name]?.addValue(decodedVal.values);
+          cap[decodedVal.name] = NetFieldCapture<(List<double>, DateTime)>(
+            decodedVal.name,
+            decodedVal.unit,
+          );
+          cap[decodedVal.name]?.addValue(
+            (
+              decodedVal.values,
+              DateTime.fromMillisecondsSinceEpoch(decodedVal.timestamp)
+            ),
+          );
           streamController.add(cap);
           // we must rebuild the whole UI on a new topic
         } else {
-          cap[decodedVal.name]?.addValue(decodedVal.values);
+          cap[decodedVal.name]?.addValue(
+            (
+              decodedVal.values,
+              DateTime.fromMillisecondsSinceEpoch(decodedVal.timestamp)
+            ),
+          );
         }
       })
       ..onDisconnect((final _) => print('disconnect'));

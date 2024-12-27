@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../connection/base_data.dart';
 import '../global_settings.dart';
@@ -11,11 +12,11 @@ class DataPage extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final AsyncValue<Map<String, NetFieldCapture<List<double>>>> caps =
-        ref.watch(capModelHolderProvider);
+    final AsyncValue<Map<String, NetFieldCapture<(List<double>, DateTime)>>>
+        caps = ref.watch(capModelHolderProvider);
     return switch (caps) {
-      AsyncData<Map<String, NetFieldCapture<List<double>>>>(
-        :final Map<String, NetFieldCapture<List<double>>> value
+      AsyncData<Map<String, NetFieldCapture<(List<double>, DateTime)>>>(
+        :final Map<String, NetFieldCapture<(List<double>, DateTime)>> value
       ) =>
         DataExpander(
           items: value.values.toList(),
@@ -46,7 +47,7 @@ class ErrorViewer extends ConsumerWidget {
 }
 
 class DataExpander extends ConsumerStatefulWidget {
-  final List<NetFieldCapture<List<double>>> items;
+  final List<NetFieldCapture<(List<double>, DateTime)>> items;
   const DataExpander({
     required this.items,
     super.key,
@@ -75,11 +76,11 @@ class _DataExpanderState extends ConsumerState<DataExpander> {
 
   // Build a hierarchical tree from the list of items
   Map<String, dynamic> _buildTree(
-    final List<NetFieldCapture<List<double>>> items,
+    final List<NetFieldCapture<(List<double>, DateTime)>> items,
   ) {
     final Map<String, dynamic> root = <String, dynamic>{};
 
-    for (final NetFieldCapture<List<double>> item in items) {
+    for (final NetFieldCapture<(List<double>, DateTime)> item in items) {
       final List<String> parts = item.topic.split('/');
       Map<String, dynamic> currentLevel = root;
 
@@ -137,11 +138,11 @@ class _DataExpanderState extends ConsumerState<DataExpander> {
       items.map(
         (final dynamic item) {
           assert(
-            item.runtimeType == NetFieldCapture<List<double>>,
+            item.runtimeType == NetFieldCapture<(List<double>, DateTime)>,
             'Failure to ensure NetField existence',
           );
           return DataPoint(
-            item: item as NetFieldCapture<List<double>>,
+            item: item as NetFieldCapture<(List<double>, DateTime)>,
             level: level,
           );
         },
@@ -149,7 +150,7 @@ class _DataExpanderState extends ConsumerState<DataExpander> {
 }
 
 class DataPoint extends ConsumerWidget {
-  final NetFieldCapture<List<double>> item;
+  final NetFieldCapture<(List<double>, DateTime)> item;
   final int level;
 
   const DataPoint({
@@ -164,16 +165,16 @@ class DataPoint extends ConsumerWidget {
       favoriteTopicsManagerProvider
           .select((final SplayTreeSet<String> it) => it.contains(item.topic)),
     );
-    return StreamBuilder<List<double>>(
+    return StreamBuilder<(List<double>, DateTime)>(
       stream: item.getStream(),
       builder: (
         final BuildContext context,
-        final AsyncSnapshot<List<double>> snapshot,
+        final AsyncSnapshot<(List<double>, DateTime)> snapshot,
       ) {
         final Color? textColor = item.stale ? Colors.red : null;
         final IconData isFavIcon = isFav ? Icons.star : Icons.star_border;
         final Iterable<String>? data =
-            snapshot.data?.map((final double e) => e.toStringAsFixed(4));
+            snapshot.data?.$1.map((final double e) => e.toStringAsFixed(4));
         return Padding(
           padding: EdgeInsets.only(left: level * 8.0, right: 4.0),
           child: Row(
@@ -194,6 +195,14 @@ class DataPoint extends ConsumerWidget {
                       }
                     },
                     icon: Icon(isFavIcon),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      await context.push(
+                        '/graphLive/${Uri.encodeComponent(item.topic)}',
+                      );
+                    },
+                    icon: const Icon(Icons.launch),
                   ),
                   Text(
                     item.topic.split('/').last,

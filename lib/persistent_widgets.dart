@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'connection/base_data.dart';
 import 'services/run_service.dart';
@@ -15,7 +16,7 @@ class SettingsButton extends StatelessWidget {
         icon: const Icon(
           Icons.settings,
         ),
-        onPressed: () async => Navigator.pushNamed(context, '/settings'),
+        onPressed: () async => context.push('/settings'),
       );
 }
 
@@ -86,21 +87,21 @@ class BottomSysInfo extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final AsyncValue<Map<String, NetFieldCapture<List<double>>>> caps =
-        ref.watch(capModelHolderProvider);
+    final AsyncValue<Map<String, NetFieldCapture<(List<double>, DateTime)>>>
+        caps = ref.watch(capModelHolderProvider);
 
     return switch (caps) {
-      AsyncData<Map<String, NetFieldCapture<List<double>>>>(
-        :final Map<String, NetFieldCapture<List<double>>> value
+      AsyncData<Map<String, NetFieldCapture<(List<double>, DateTime)>>>(
+        :final Map<String, NetFieldCapture<(List<double>, DateTime)>> value
       ) =>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            StreamBuilder<List<double>>(
+            StreamBuilder<(List<double>, DateTime)>(
               stream: value['Latency']?.getStream(),
               builder: (
                 final BuildContext context,
-                final AsyncSnapshot<List<double>> snapshot,
+                final AsyncSnapshot<(List<double>, DateTime)> snapshot,
               ) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -108,17 +109,17 @@ class BottomSysInfo extends ConsumerWidget {
                   case ConnectionState.waiting:
                     return const Text('WAITING');
                   case ConnectionState.active:
-                    return Text('Latency: ${snapshot.data?.first} ms');
+                    return Text('Latency: ${snapshot.data?.$1.first} ms');
                   case ConnectionState.done:
                     return const Text('DONE');
                 }
               },
             ),
-            StreamBuilder<List<double>>(
+            StreamBuilder<(List<double>, DateTime)>(
               stream: value['Viewers']?.getStream(),
               builder: (
                 final BuildContext context,
-                final AsyncSnapshot<List<double>> snapshot,
+                final AsyncSnapshot<(List<double>, DateTime)> snapshot,
               ) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
@@ -127,7 +128,7 @@ class BottomSysInfo extends ConsumerWidget {
                     return const Text('WAITING');
                   case ConnectionState.active:
                     return Text(
-                      'Current Viewers: ${snapshot.data?.first.round()}',
+                      'Current Viewers: ${snapshot.data?.$1.first.round()}',
                     );
                   case ConnectionState.done:
                     return const Text('DONE');

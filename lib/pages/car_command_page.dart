@@ -10,12 +10,12 @@ class CarCommandPage extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final List<NetFieldCapture<List<double>>>? items = ref
+    final List<NetFieldCapture<(List<double>, DateTime)>>? items = ref
         .watch(capModelHolderProvider)
         .value
         ?.values
         .where(
-          (final NetFieldCapture<List<double>> val) =>
+          (final NetFieldCapture<(List<double>, DateTime)> val) =>
               val.topic.startsWith('Calypso/Bidir/State/'),
         )
         .toList();
@@ -26,23 +26,26 @@ class CarCommandPage extends ConsumerWidget {
       );
     }
 
-    final Map<String, List<NetFieldCapture<List<double>>>> i =
-        <String, List<NetFieldCapture<List<double>>>>{};
-    for (final NetFieldCapture<List<double>> item in items) {
+    final Map<String, List<NetFieldCapture<(List<double>, DateTime)>>> i =
+        <String, List<NetFieldCapture<(List<double>, DateTime)>>>{};
+    for (final NetFieldCapture<(List<double>, DateTime)> item in items) {
       if (i[item.topic.getKey()] != null) {
         i[item.topic.getKey()]?.add(item);
       } else {
-        i[item.topic.getKey()] = <NetFieldCapture<List<double>>>[item];
+        i[item.topic.getKey()] = <NetFieldCapture<(List<double>, DateTime)>>[
+          item,
+        ];
       }
     }
-    final Iterable<MapEntry<String, List<NetFieldCapture<List<double>>>>> vals =
-        i.entries;
+    final Iterable<
+            MapEntry<String, List<NetFieldCapture<(List<double>, DateTime)>>>>
+        vals = i.entries;
 
     return ListView.builder(
       itemCount: vals.length,
       itemBuilder: (final BuildContext context, final int index) {
-        final MapEntry<String, List<NetFieldCapture<List<double>>>> topics =
-            vals.elementAt(index);
+        final MapEntry<String, List<NetFieldCapture<(List<double>, DateTime)>>>
+            topics = vals.elementAt(index);
         return CommandPkg(topics: topics);
       },
     );
@@ -50,7 +53,8 @@ class CarCommandPage extends ConsumerWidget {
 }
 
 class CommandPkg extends ConsumerStatefulWidget {
-  final MapEntry<String, List<NetFieldCapture<List<double>>>> topics;
+  final MapEntry<String, List<NetFieldCapture<(List<double>, DateTime)>>>
+      topics;
 
   const CommandPkg({required this.topics, super.key});
 
@@ -105,18 +109,19 @@ class _CommandPkgState extends ConsumerState<CommandPkg> {
                     ),
                     Flexible(
                       child: Center(
-                        child: StreamBuilder<List<double>>(
+                        child: StreamBuilder<(List<double>, DateTime)>(
                           stream: widget.topics.value[index].getStream(),
                           builder: (
                             final BuildContext context,
-                            final AsyncSnapshot<List<double>> snapshot,
+                            final AsyncSnapshot<(List<double>, DateTime)>
+                                snapshot,
                           ) {
                             final Color? textColor =
                                 widget.topics.value[index].stale
                                     ? Colors.red
                                     : null;
-                            final Iterable<String>? data = snapshot.data
-                                ?.map((final double e) => e.toStringAsFixed(3));
+                            final Iterable<String>? data = snapshot.data?.$1
+                                .map((final double e) => e.toStringAsFixed(3));
                             return Padding(
                               padding: const EdgeInsets.only(
                                 left: 16.0,

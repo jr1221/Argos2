@@ -43,9 +43,11 @@ class DataPoint extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final NetFieldCapture<List<double>>? item = ref.watch(
+    final NetFieldCapture<(List<double>, DateTime)>? item = ref.watch(
       capModelHolderProvider.select(
-        (final AsyncValue<Map<String, NetFieldCapture<List<double>>>> it) =>
+        (final AsyncValue<
+                    Map<String, NetFieldCapture<(List<double>, DateTime)>>>
+                it,) =>
             it.value?[topic],
       ),
     );
@@ -78,63 +80,64 @@ class DataPoint extends ConsumerWidget {
         ),
       );
     } else {
-      return StreamBuilder<List<double>>(
+      return StreamBuilder<(List<double>, DateTime)>(
         stream: item.getStream(),
         builder: (
           final BuildContext context,
-          final AsyncSnapshot<List<double>> snapshot,
+          final AsyncSnapshot<(List<double>, DateTime)> snapshot,
         ) {
           final Color? textColor = item.stale ? Colors.red : null;
           final Iterable<String>? data =
-              snapshot.data?.map((final double e) => e.toStringAsFixed(4));
+              snapshot.data?.$1.map((final double e) => e.toStringAsFixed(4));
           return Padding(
-              padding: const EdgeInsets.only(
-                left: 8.0,
-                right: 4.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      IconButton(
-                        onPressed: () async {
-                          await ref
-                              .read(favoriteTopicsManagerProvider.notifier)
-                              .removeTopic(item.topic);
-                        },
-                        icon: const Icon(Icons.star),
-                      ),
-                      Tooltip(
-                        message: 'Topic: ${item.topic}',
-                        child: LimitedBox(
-                          maxWidth: MediaQuery.sizeOf(context).width * 0.55,
-                          child: Text(
-                            overflow: TextOverflow.ellipsis,
-                            item.topic,
-                          ),
+            padding: const EdgeInsets.only(
+              left: 8.0,
+              right: 4.0,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: () async {
+                        await ref
+                            .read(favoriteTopicsManagerProvider.notifier)
+                            .removeTopic(item.topic);
+                      },
+                      icon: const Icon(Icons.star),
+                    ),
+                    Tooltip(
+                      message: 'Topic: ${item.topic}',
+                      child: LimitedBox(
+                        maxWidth: MediaQuery.sizeOf(context).width * 0.55,
+                        child: Text(
+                          overflow: TextOverflow.ellipsis,
+                          item.topic,
                         ),
                       ),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        softWrap: true,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: textColor),
-                        '${data?.join('\n')}',
-                      ),
-                      const SizedBox(
-                        width: 4.0,
-                      ),
-                      Text(item.unit),
-                    ],
-                  ),
-                ],
-              ));
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      softWrap: true,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: textColor),
+                      '${data?.join('\n')}',
+                    ),
+                    const SizedBox(
+                      width: 4.0,
+                    ),
+                    Text(item.unit),
+                  ],
+                ),
+              ],
+            ),
+          );
         },
       );
     }
