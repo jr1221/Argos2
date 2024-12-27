@@ -1,10 +1,9 @@
 import 'package:http/http.dart' as http;
 
-
 /// Send a car config command to Scylla
 /// Returns true if a failure occured
 Future<bool> sendConfigCommand(
-    final Uri uri,
+  final Uri uri,
   final String key,
   final List<double> values,
 ) async {

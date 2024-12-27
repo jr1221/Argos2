@@ -173,7 +173,7 @@ class DataPoint extends ConsumerWidget {
         final Color? textColor = item.stale ? Colors.red : null;
         final IconData isFavIcon = isFav ? Icons.star : Icons.star_border;
         final Iterable<String>? data =
-        snapshot.data?.map((final double e) => e.toStringAsFixed(4));
+            snapshot.data?.map((final double e) => e.toStringAsFixed(4));
         return Padding(
           padding: EdgeInsets.only(left: level * 8.0, right: 4.0),
           child: Row(

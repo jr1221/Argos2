@@ -70,7 +70,6 @@ Stream<Map<String, NetFieldCapture<List<double>>>> capModelHolder(
     connectionControlProvider.select((final ConnectionProps it) => it.useMqtt),
   );
 
-
   MqttServerClient? client;
   io.Socket? socket;
   final SplayTreeMap<String, NetFieldCapture<List<double>>> cap =
