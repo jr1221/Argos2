@@ -22,8 +22,8 @@ class Settings extends StatelessWidget {
   const Settings({super.key});
 
   @override
-  Widget build(final BuildContext context) => const Column(
-        children: <Widget>[
+  Widget build(final BuildContext context) => ListView(
+        children: const <Widget>[
           MqttToggleSwitch(),
           UriForm(
             labelText: 'Backend URI',

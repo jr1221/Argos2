@@ -66,70 +66,127 @@ class _GraphPageState extends ConsumerState<GraphPage> {
     final Duration liveGraphDur = ref.watch(liveGraphSettingsManagerProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Graph'),
-        actions: <Widget>[
-          // make scrollable as selection area is limited
-          SingleChildScrollView(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: MultiDropdown<String>(
-                autovalidateMode: AutovalidateMode.onUnfocus,
-                searchEnabled: true,
-                onSelectionChange: (final List<String> items) {
-                  setState(() {
-                    resetKey++;
-                    topics = items;
-                  });
-                },
-                items: items?.values
-                        .map(
-                          (final NetFieldCapture<(List<double>, DateTime)> e) =>
-                              DropdownItem<String>(
-                            // for default state and when state invalidated
-                            selected: topics.contains(e.topic),
-                            label: e.topic,
-                            value: e.topic,
-                          ),
-                        )
-                        .toList() ??
-                    <DropdownItem<String>>[],
-                chipDecoration: ChipDecoration(
-                  backgroundColor: Theme.of(context).highlightColor,
-                ),
-                dropdownDecoration: DropdownDecoration(
-                  backgroundColor: Theme.of(context).dialogBackgroundColor,
-                  header: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      'Select topics from the list',
-                      textAlign: TextAlign.start,
-                      style: Theme.of(context).textTheme.labelMedium,
+        appBar: AppBar(
+          actions: <Widget>[
+            // make scrollable as selection area is limited
+            SingleChildScrollView(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: MultiDropdown<String>(
+                  autovalidateMode: AutovalidateMode.onUnfocus,
+                  searchEnabled: true,
+                  onSelectionChange: (final List<String> items) {
+                    setState(() {
+                      resetKey++;
+                      topics = items;
+                    });
+                  },
+                  items: items?.values
+                          .map(
+                            (final NetFieldCapture<(List<double>, DateTime)>
+                                    e,) =>
+                                DropdownItem<String>(
+                              // for default state and when state invalidated
+                              selected: topics.contains(e.topic),
+                              label: e.topic,
+                              value: e.topic,
+                            ),
+                          )
+                          .toList() ??
+                      <DropdownItem<String>>[],
+                  chipDecoration: ChipDecoration(
+                    backgroundColor: Theme.of(context).highlightColor,
+                  ),
+                  dropdownDecoration: DropdownDecoration(
+                    backgroundColor: Theme.of(context).dialogBackgroundColor,
+                    header: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        'Select topics from the list',
+                        textAlign: TextAlign.start,
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
                     ),
                   ),
-                ),
-                dropdownItemDecoration: DropdownItemDecoration(
-                  selectedBackgroundColor: Theme.of(context).highlightColor,
-                  selectedIcon: Icon(
-                    Icons.check_box,
-                    color: Theme.of(context)
-                        .checkboxTheme
-                        .fillColor
-                        ?.resolve(<WidgetState>{WidgetState.selected}),
+                  dropdownItemDecoration: DropdownItemDecoration(
+                    selectedBackgroundColor: Theme.of(context).highlightColor,
+                    selectedIcon: Icon(
+                      Icons.check_box,
+                      color: Theme.of(context)
+                          .checkboxTheme
+                          .fillColor
+                          ?.resolve(<WidgetState>{WidgetState.selected}),
+                    ),
+                    disabledIcon: Icon(
+                      Icons.lock,
+                      color: Theme.of(context).disabledColor,
+                    ),
                   ),
-                  disabledIcon: Icon(
-                    Icons.lock,
-                    color: Theme.of(context).disabledColor,
-                  ),
+                  validator: (final List<DropdownItem<String>>? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select one or more topics';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (final List<DropdownItem<String>>? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select one or more topics';
-                  }
-                  return null;
-                },
               ),
             ),
+            const SizedBox(
+              width: 10.0,
+            ),
+            DropdownMenu<int>(
+              enabled: !isLive,
+              label: const Text('Select Run'),
+              initialSelection: 1,
+              onSelected: (final int? id) {
+                setState(() {
+                  resetKey++;
+                  runId = id ?? 0;
+                });
+              },
+              dropdownMenuEntries: runs
+                  .map(
+                    (final PublicRun run) => DropdownMenuEntry<int>(
+                      value: run.id,
+                      label: run.id.toString(),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        ),
+        // show a live or historical widget based on [isLive]
+        body: isLive
+            ? GraphLive(
+                items: itemsToDisplay,
+                liveGraphDur: liveGraphDur,
+                key: ValueKey<int>(resetKey),
+              )
+            : GraphHistorical(
+                topics: itemsToDisplay
+                    .map(
+                      (final NetFieldCapture<(List<double>, DateTime)> e) =>
+                          e.topic,
+                    )
+                    .toList(),
+                runId: runId,
+                units: itemsToDisplay
+                    .map(
+                      (final NetFieldCapture<(List<double>, DateTime)> e) =>
+                          e.unit,
+                    )
+                    .toList(),
+                key: ValueKey<int>(resetKey),
+              ),
+        persistentFooterAlignment: AlignmentDirectional.center,
+        persistentFooterButtons: <Widget>[
+          TextButton(
+            onPressed: () {
+              setState(() {
+                resetKey++;
+              });
+            },
+            child: const Text('Reset Graph'),
           ),
           Text(
             isMqtt
@@ -141,69 +198,12 @@ class _GraphPageState extends ConsumerState<GraphPage> {
             onChanged: isMqtt
                 ? null
                 : (final bool newLive) {
-                    setState(() {
-                      isLive = newLive;
-                    });
-                  },
-          ),
-          const SizedBox(
-            width: 10.0,
-          ),
-          DropdownMenu<int>(
-            enabled: !isLive,
-            label: const Text('Select Run'),
-            initialSelection: 1,
-            onSelected: (final int? id) {
               setState(() {
-                resetKey++;
-                runId = id ?? 0;
+                isLive = newLive;
               });
             },
-            dropdownMenuEntries: runs
-                .map(
-                  (final PublicRun run) => DropdownMenuEntry<int>(
-                    value: run.id,
-                    label: run.id.toString(),
-                  ),
-                )
-                .toList(),
           ),
         ],
-      ),
-      // show a live or historical widget based on [isLive]
-      body: isLive
-          ? GraphLive(
-              items: itemsToDisplay,
-              liveGraphDur: liveGraphDur,
-              key: ValueKey<int>(resetKey),
-            )
-          : GraphHistorical(
-              topics: itemsToDisplay
-                  .map(
-                    (final NetFieldCapture<(List<double>, DateTime)> e) =>
-                        e.topic,
-                  )
-                  .toList(),
-              runId: runId,
-              units: itemsToDisplay
-                  .map(
-                    (final NetFieldCapture<(List<double>, DateTime)> e) =>
-                        e.unit,
-                  )
-                  .toList(),
-              key: ValueKey<int>(resetKey),
-            ),
-      persistentFooterAlignment: AlignmentDirectional.center,
-      persistentFooterButtons: <Widget>[
-        TextButton(
-          onPressed: () {
-            setState(() {
-              resetKey++;
-            });
-          },
-          child: const Text('Reset Graph'),
-        ),
-      ],
     );
   }
 }
@@ -398,6 +398,7 @@ class _GraphHistoricalState extends ConsumerState<GraphHistorical> {
             enableSelectionZooming: true,
             enablePanning: true,
             enableMouseWheelZooming: true,
+            enablePinching: true,
           ),
           legend:
               const Legend(isVisible: true, position: LegendPosition.bottom),

@@ -120,6 +120,7 @@ class MainScreens extends ConsumerWidget {
     );
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 40.0,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Hello World'),
         actions: <Widget>[
