@@ -13,7 +13,8 @@ class FavoritesPage extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final SplayTreeSet<String> favs = ref.watch(favoriteTopicsManagerProvider);
+    final SplayTreeSet<PublicDataType> favs =
+        ref.watch(favoriteTopicsManagerProvider);
     if (favs.isEmpty) {
       return RichText(
         text: const TextSpan(
@@ -40,7 +41,7 @@ class FavoritesPage extends ConsumerWidget {
 }
 
 class DataPoint extends ConsumerWidget {
-  final String topic;
+  final PublicDataType topic;
   const DataPoint({required this.topic, super.key});
 
   @override
@@ -52,7 +53,7 @@ class DataPoint extends ConsumerWidget {
                   Map<String, NetFieldCapture<(List<double>, DateTime)>>>
               it,
         ) =>
-            it.value?[topic],
+            it.value?[topic.name],
       ),
     );
     if (item == null) {
@@ -72,7 +73,7 @@ class DataPoint extends ConsumerWidget {
                   icon: const Icon(Icons.star),
                 ),
                 Text(
-                  topic.split('/').last,
+                  topic.name.split('/').last,
                 ),
               ],
             ),
@@ -107,15 +108,15 @@ class DataPoint extends ConsumerWidget {
                       onPressed: () async {
                         await ref
                             .read(favoriteTopicsManagerProvider.notifier)
-                            .removeTopic(item.topic);
+                            .removeTopic(item.publicDataType);
                       },
                       icon: const Icon(Icons.star),
                     ),
                     IconButton(
                       onPressed: () async {
                         ref.read(graphTopicsManagerProvider.notifier).addTopic(
-                          PublicDataType(name: item.topic, unit: item.unit),
-                        );
+                              PublicDataType(name: item.topic, unit: item.unit),
+                            );
                         await context.push(
                           '/graph',
                         );
@@ -136,14 +137,23 @@ class DataPoint extends ConsumerWidget {
                 ),
                 Row(
                   children: <Widget>[
-                    Text(
-                      softWrap: true,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: textColor),
-                      '${data?.join('\n')}',
-                    ),
+                    if (data != null)
+                      Text(
+                        softWrap: true,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: textColor),
+                        data.join('\n'),
+                      )
+                    else
+                      Text(
+                        'No Live Data',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: textColor),
+                      ),
                     const SizedBox(
                       width: 4.0,
                     ),

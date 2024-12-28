@@ -129,6 +129,7 @@ class MainScreens extends ConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Hello World'),
         actions: <Widget>[
+          const GraphFavoritesButton(),
           if (!useMqtt) const RunIncrementButton(),
           const SettingsButton(),
         ],

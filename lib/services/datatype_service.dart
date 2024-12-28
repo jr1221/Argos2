@@ -24,12 +24,17 @@ Future<List<PublicDataType>> getDataTypes(final Ref ref) async {
 
 /// A run, as given from Scylla
 @freezed
-class PublicDataType with _$PublicDataType {
+abstract class PublicDataType
+    implements _$PublicDataType, Comparable<PublicDataType> {
   const factory PublicDataType({
     required final String name,
     required final String unit,
   }) = _PublicDataType;
+  const PublicDataType._();
 
   factory PublicDataType.fromJson(final Map<String, Object?> json) =>
       _$PublicDataTypeFromJson(json);
+
+  @override
+  int compareTo(final PublicDataType other) => name.compareTo(other.name);
 }

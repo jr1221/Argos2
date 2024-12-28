@@ -1,8 +1,12 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'connection/base_data.dart';
+import 'global_settings.dart';
+import 'services/datatype_service.dart';
 import 'services/run_service.dart';
 
 /// A button to enter settings, should be in actions[]
@@ -17,6 +21,26 @@ class SettingsButton extends StatelessWidget {
           Icons.settings,
         ),
         onPressed: () async => context.push('/settings'),
+      );
+}
+
+class GraphFavoritesButton extends ConsumerWidget {
+  const GraphFavoritesButton({super.key});
+
+  @override
+  Widget build(final BuildContext context, final WidgetRef ref) => Tooltip(
+        message: 'Click to graph all favorited topics on one graph',
+        child: ElevatedButton(
+          onPressed: () async {
+            final SplayTreeSet<PublicDataType> favTopics =
+                ref.read(favoriteTopicsManagerProvider);
+            ref
+                .read(graphTopicsManagerProvider.notifier)
+                .setTopics(favTopics.toList());
+            await context.push('/graph');
+          },
+          child: const Text('Graph Favs'),
+        ),
       );
 }
 
@@ -60,7 +84,7 @@ class RunIncrementButton extends ConsumerWidget {
                 );
               });
             },
-            child: const Text('Increment run'),
+            child: const Text('New run'),
           ),
         ),
       AsyncError<Object?>(:final Object error) => Tooltip(

@@ -2,15 +2,19 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mqtt5_client/mqtt5_client.dart';
 import 'package:mqtt5_client/mqtt5_server_client.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../global_settings.dart';
+import '../services/datatype_service.dart';
 import 'server_data.pb.dart';
 
+part 'base_data.freezed.dart';
 part 'base_data.g.dart';
 
 /// A class for capturing and processing each point coming from a specific topic
@@ -57,6 +61,8 @@ class NetFieldCapture<T> {
   Future<void> dispose() async {
     await _stream.close();
   }
+
+  PublicDataType get publicDataType => PublicDataType(name: topic, unit: unit);
 }
 
 @riverpod
@@ -87,6 +93,27 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
       streamController = StreamController<
           Map<String, NetFieldCapture<(List<double>, DateTime)>>>();
   ref.onDispose(streamController.close);
+
+  // a hook to populate the netfield caps with dataTypes that should exist
+  // good for not live viewing
+  if (!useMqtt) {
+    ref.listen(getDataTypesProvider, (
+      final AsyncValue<List<PublicDataType>>? prev,
+      final AsyncValue<List<PublicDataType>> newDataTypes,
+    ) {
+      if (newDataTypes.valueOrNull != null) {
+        for (final PublicDataType type in newDataTypes.valueOrNull!) {
+          if (!cap.containsKey(type.name)) {
+            cap[type.name] = NetFieldCapture<(List<double>, DateTime)>(
+              type.name,
+              type.unit,
+            );
+            streamController.add(cap);
+          }
+        }
+      }
+    });
+  }
 
   if (useMqtt) {
     client = MqttServerClient.withPort(
@@ -184,19 +211,16 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
 }
 
 /// Socket wire format, JSON
-class ClientData {
-  final int runId;
-  final String name;
-  final String unit;
-  final List<double> values;
-  final int timestamp;
+@freezed
+class ClientData with _$ClientData {
+  const factory ClientData({
+    required final int runId,
+    required final String name,
+    required final String unit,
+    required final List<double> values,
+    required final int timestamp,
+  }) = _ClientData;
 
-  ClientData(this.runId, this.name, this.unit, this.values, this.timestamp);
-
-  ClientData.fromJson(final Map<String, dynamic> json)
-      : runId = json['runId'] as int,
-        name = json['name'] as String,
-        unit = json['unit'] as String,
-        values = (json['values'] as List<dynamic>).cast<double>(),
-        timestamp = json['timestamp'] as int;
+  factory ClientData.fromJson(final Map<String, Object?> json) =>
+      _$ClientDataFromJson(json);
 }

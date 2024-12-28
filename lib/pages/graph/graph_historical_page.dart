@@ -20,7 +20,7 @@ class _GraphHistoricalState extends ConsumerState<GraphHistorical> {
   final Map<String, HistoricalGraphRenderInfo> info =
       <String, HistoricalGraphRenderInfo>{};
 
-  List<LineSeries<PublicData, DateTime>> _fetchSeries() => info.values
+  List<XyDataSeries<PublicData, DateTime>> _fetchSeries() => info.values
       .map((final HistoricalGraphRenderInfo e) => e.getSeries())
       .toList();
 
@@ -123,7 +123,7 @@ class HistoricalGraphRenderInfo {
 
   HistoricalGraphRenderInfo(this.topic, this.unit, this.data);
 
-  LineSeries<PublicData, DateTime> getSeries() =>
+  XyDataSeries<PublicData, DateTime> getSeries() =>
       LineSeries<PublicData, DateTime>(
         name: topic,
         dataSource: data,

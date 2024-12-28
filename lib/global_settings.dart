@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,29 +16,17 @@ part 'global_settings.g.dart';
 /// a package of all the current connection properties
 @freezed
 class ConnectionProps with _$ConnectionProps {
-  // /// current uri, see [useMqtt] if the uri is [mqttUri] or [socketUri]
-  // final Uri uri;
-  //
-  // /// true if app is in MQTT mode
-  // final bool useMqtt;
-  //
-  // /// mqtt URI to use
-  // final Uri mqttUri;
-  //
-  // /// socket URI to use
-  // final Uri socketUri;
-  //
-  // const ConnectionProps(
-  //   this.uri,
-  //   this.mqttUri,
-  //   this.socketUri, {
-  //   required this.useMqtt,
-  // });
-  //
   const factory ConnectionProps({
+    /// current uri, see [useMqtt] if the uri is [mqttUri] or [socketUri]
     required final Uri uri,
+
+    /// mqtt URI to use
     required final Uri mqttUri,
+
+    /// socket URI to use
     required final Uri socketUri,
+
+    /// true if app is in MQTT mode
     required final bool useMqtt,
   }) = _ConnectionProps;
 }
@@ -105,13 +94,15 @@ class ConnectionControl extends _$ConnectionControl {
 
 @riverpod
 class FavoriteTopicsManager extends _$FavoriteTopicsManager {
-  SplayTreeSet<String> _topics = SplayTreeSet<String>();
+  SplayTreeSet<PublicDataType> _topics = SplayTreeSet<PublicDataType>();
   @override
-  SplayTreeSet<String> build() {
+  SplayTreeSet<PublicDataType> build() {
     final AsyncValue<SharedPreferences> prefs =
         ref.watch(sharedPrefsInstanceProvider);
-    _topics = SplayTreeSet<String>.from(
-      prefs.value?.getStringList(FAVORITE_TOPICS_KEY) ??
+    _topics = SplayTreeSet<PublicDataType>.from(
+      prefs.value?.getStringList(FAVORITE_TOPICS_KEY)?.map(
+                (final String f) => PublicDataType.fromJson(jsonDecode(f)),
+              ) ??
           FAVORITE_TOPICS_DEFAULT,
     );
     return _topics;
@@ -120,17 +111,19 @@ class FavoriteTopicsManager extends _$FavoriteTopicsManager {
   Future<void> _updateTopics() async {
     await ref.read(sharedPrefsInstanceProvider).value?.setStringList(
           FAVORITE_TOPICS_KEY,
-          _topics.toList(),
+          _topics
+              .map((final PublicDataType f) => jsonEncode(f.toJson()))
+              .toList(),
         );
   }
 
-  Future<void> addTopic(final String topic) async {
+  Future<void> addTopic(final PublicDataType topic) async {
     _topics.add(topic);
     await _updateTopics();
     ref.invalidateSelf();
   }
 
-  Future<void> removeTopic(final String topic) async {
+  Future<void> removeTopic(final PublicDataType topic) async {
     _topics.remove(topic);
     await _updateTopics();
     ref.invalidateSelf();

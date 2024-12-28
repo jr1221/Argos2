@@ -115,10 +115,10 @@ class __$$PublicDataTypeImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$PublicDataTypeImpl
-    with DiagnosticableTreeMixin
-    implements _PublicDataType {
-  const _$PublicDataTypeImpl({required this.name, required this.unit});
+class _$PublicDataTypeImpl extends _PublicDataType
+    with DiagnosticableTreeMixin {
+  const _$PublicDataTypeImpl({required this.name, required this.unit})
+      : super._();
 
   factory _$PublicDataTypeImpl.fromJson(Map<String, dynamic> json) =>
       _$$PublicDataTypeImplFromJson(json);
@@ -172,10 +172,11 @@ class _$PublicDataTypeImpl
   }
 }
 
-abstract class _PublicDataType implements PublicDataType {
+abstract class _PublicDataType extends PublicDataType {
   const factory _PublicDataType(
       {required final String name,
       required final String unit}) = _$PublicDataTypeImpl;
+  const _PublicDataType._() : super._();
 
   factory _PublicDataType.fromJson(Map<String, dynamic> json) =
       _$PublicDataTypeImpl.fromJson;

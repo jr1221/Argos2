@@ -3,10 +3,34 @@
 part of 'base_data.dart';
 
 // **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$ClientDataImpl _$$ClientDataImplFromJson(Map<String, dynamic> json) =>
+    _$ClientDataImpl(
+      runId: (json['runId'] as num).toInt(),
+      name: json['name'] as String,
+      unit: json['unit'] as String,
+      values: (json['values'] as List<dynamic>)
+          .map((e) => (e as num).toDouble())
+          .toList(),
+      timestamp: (json['timestamp'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$ClientDataImplToJson(_$ClientDataImpl instance) =>
+    <String, dynamic>{
+      'runId': instance.runId,
+      'name': instance.name,
+      'unit': instance.unit,
+      'values': instance.values,
+      'timestamp': instance.timestamp,
+    };
+
+// **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$capModelHolderHash() => r'eb09c4f8aec9aec736bd60695f88207c18adba0a';
+String _$capModelHolderHash() => r'6ed298df7fe99c5509a1c308e89c11cccaa04b60';
 
 /// See also [capModelHolder].
 @ProviderFor(capModelHolder)

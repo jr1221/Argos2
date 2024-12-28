@@ -26,7 +26,7 @@ class GraphLiveMgr extends ConsumerWidget {
                 .where(
                   (final NetFieldCapture<(List<double>, DateTime)> e) =>
                       selectedItems.contains(
-                    PublicDataType(name: e.topic, unit: e.unit),
+                    e.publicDataType,
                   ),
                 )
                 .toList() ??

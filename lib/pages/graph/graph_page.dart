@@ -121,59 +121,69 @@ class _TopicsSelectorState extends ConsumerState<TopicsSelector> {
     final List<PublicDataType>? availTopics =
         ref.watch(getDataTypesProvider).value;
     return Scaffold(
-      appBar: AppBar(),
-      body: MultiDropdown<PublicDataType>(
-        key: UniqueKey(),
-        autovalidateMode: AutovalidateMode.onUnfocus,
-        searchEnabled: true,
-        onSelectionChange: (final List<PublicDataType> items) {
-          ref.read(graphTopicsManagerProvider.notifier).setTopics(items);
-        },
-        items: availTopics
-                ?.map(
-                  (final PublicDataType e) => DropdownItem<PublicDataType>(
-                    selected: selectedTopics.contains(e),
-                    label: e.name,
-                    value: e,
-                  ),
-                )
-                .toList() ??
-            <DropdownItem<PublicDataType>>[],
-        chipDecoration: ChipDecoration(
-          backgroundColor: Theme.of(context).highlightColor,
-        ),
-        dropdownDecoration: DropdownDecoration(
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
-          backgroundColor: Theme.of(context).dialogBackgroundColor,
-          header: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              'Select topics from the list',
-              textAlign: TextAlign.start,
-              style: Theme.of(context).textTheme.labelMedium,
+      appBar: AppBar(
+        title: const Text('Topics Selection for Graph'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          MultiDropdown<PublicDataType>(
+            key: UniqueKey(),
+            autovalidateMode: AutovalidateMode.onUnfocus,
+            searchEnabled: true,
+            onSelectionChange: (final List<PublicDataType> items) {
+              ref.read(graphTopicsManagerProvider.notifier).setTopics(items);
+            },
+            items: availTopics
+                    ?.map(
+                      (final PublicDataType e) => DropdownItem<PublicDataType>(
+                        selected: selectedTopics.contains(e),
+                        label: e.name,
+                        value: e,
+                      ),
+                    )
+                    .toList() ??
+                <DropdownItem<PublicDataType>>[],
+            chipDecoration: ChipDecoration(
+              deleteIcon: const Icon(
+                Icons.close_sharp,
+                size: 18,
+              ),
+              backgroundColor: Theme.of(context).highlightColor,
             ),
+            dropdownDecoration: DropdownDecoration(
+              backgroundColor: Theme.of(context).dialogBackgroundColor,
+              header: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  'Select topics from the list',
+                  textAlign: TextAlign.start,
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
+              ),
+            ),
+            dropdownItemDecoration: DropdownItemDecoration(
+              selectedBackgroundColor: Theme.of(context).highlightColor,
+              selectedIcon: Icon(
+                Icons.check_box,
+                color: Theme.of(context)
+                    .checkboxTheme
+                    .fillColor
+                    ?.resolve(<WidgetState>{WidgetState.selected}),
+              ),
+              disabledIcon: Icon(
+                Icons.lock,
+                color: Theme.of(context).disabledColor,
+              ),
+            ),
+            validator: (final List<DropdownItem<PublicDataType>>? value) {
+              if (value == null || value.isEmpty) {
+                return 'Please select one or more topics';
+              }
+              return null;
+            },
           ),
-        ),
-        dropdownItemDecoration: DropdownItemDecoration(
-          selectedBackgroundColor: Theme.of(context).highlightColor,
-          selectedIcon: Icon(
-            Icons.check_box,
-            color: Theme.of(context)
-                .checkboxTheme
-                .fillColor
-                ?.resolve(<WidgetState>{WidgetState.selected}),
-          ),
-          disabledIcon: Icon(
-            Icons.lock,
-            color: Theme.of(context).disabledColor,
-          ),
-        ),
-        validator: (final List<DropdownItem<PublicDataType>>? value) {
-          if (value == null || value.isEmpty) {
-            return 'Please select one or more topics';
-          }
-          return null;
-        },
+        ],
       ),
     );
   }
