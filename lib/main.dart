@@ -6,7 +6,7 @@ import 'global_settings.dart';
 import 'pages/car_command_page.dart';
 import 'pages/data_page.dart';
 import 'pages/favorites_page.dart';
-import 'pages/graph_live_page.dart';
+import 'pages/graph_page.dart';
 import 'pages/settings_page.dart';
 import 'persistent_widgets.dart';
 
@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
       GoRoute(
         path: '/graphLive/:topic',
         builder: (final BuildContext context, final GoRouterState state) =>
-            GraphLivePage(topic: state.pathParameters['topic'] ?? 'zzz'),
+            GraphPage(topic: state.pathParameters['topic'] ?? 'zzz'),
       )
     ],
   );

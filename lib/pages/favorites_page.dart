@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../connection/base_data.dart';
 import '../global_settings.dart';
@@ -45,9 +46,11 @@ class DataPoint extends ConsumerWidget {
   Widget build(final BuildContext context, final WidgetRef ref) {
     final NetFieldCapture<(List<double>, DateTime)>? item = ref.watch(
       capModelHolderProvider.select(
-        (final AsyncValue<
-                    Map<String, NetFieldCapture<(List<double>, DateTime)>>>
-                it,) =>
+        (
+          final AsyncValue<
+                  Map<String, NetFieldCapture<(List<double>, DateTime)>>>
+              it,
+        ) =>
             it.value?[topic],
       ),
     );
@@ -106,6 +109,14 @@ class DataPoint extends ConsumerWidget {
                             .removeTopic(item.topic);
                       },
                       icon: const Icon(Icons.star),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await context.push(
+                          '/graphLive/${Uri.encodeComponent(item.topic)}',
+                        );
+                      },
+                      icon: const Icon(Icons.launch),
                     ),
                     Tooltip(
                       message: 'Topic: ${item.topic}',

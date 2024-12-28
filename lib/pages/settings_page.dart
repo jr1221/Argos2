@@ -35,6 +35,7 @@ class Settings extends StatelessWidget {
             icon: Icons.import_export_sharp,
             mqttUri: true,
           ),
+          LiveGraphDisplayDuration(),
         ],
       );
 }
@@ -186,6 +187,99 @@ class _UriFormState extends ConsumerState<UriForm> {
                     }
                   }
                 },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+class LiveGraphDisplayDuration extends ConsumerStatefulWidget {
+  const LiveGraphDisplayDuration({
+    super.key,
+  });
+
+  @override
+  ConsumerState<LiveGraphDisplayDuration> createState() =>
+      _LiveGraphDisplayDurationState();
+}
+
+class _LiveGraphDisplayDurationState
+    extends ConsumerState<LiveGraphDisplayDuration> {
+  final GlobalKey<FormState> _uriFormKey = GlobalKey<FormState>();
+  final TextEditingController _uriFormText = TextEditingController();
+
+  @override
+  void dispose() {
+    _uriFormText.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(final BuildContext context) {
+    final Duration currentVal = ref.watch(liveGraphSettingsManagerProvider);
+    if (_uriFormText.text.isEmpty) {
+      _uriFormText.text = currentVal.inSeconds.toString();
+    }
+    return Row(
+      children: <Widget>[
+        Form(
+          key: _uriFormKey,
+          child: Flexible(
+            child: TextFormField(
+              controller: _uriFormText,
+              decoration: const InputDecoration(
+                icon: Icon(Icons.line_axis_sharp),
+                labelText: 'Duration of data to show in live graph',
+                helperText: 'Right click to use default',
+                suffixText: 'seconds',
+              ),
+              onTapOutside: (final PointerDownEvent event) {
+                FocusScope.of(context).unfocus();
+              },
+              contextMenuBuilder: (
+                final BuildContext context,
+                final EditableTextState editableTextState,
+              ) =>
+                  AdaptiveTextSelectionToolbar.buttonItems(
+                buttonItems: editableTextState.contextMenuButtonItems
+                  ..add(
+                    ContextMenuButtonItem(
+                      onPressed: () {
+                        _uriFormText.text =
+                            LIVE_GRAPH_DURATION_DEFAULT.toString();
+                      },
+                      label: 'Use Default',
+                    ),
+                  ),
+                anchors: editableTextState.contextMenuAnchors,
+              ),
+              validator: (final String? value) {
+                if (value == null ||
+                    value.isEmpty ||
+                    int.tryParse(value) == null) {
+                  return 'Please enter a valid URI';
+                }
+                return null;
+              },
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            if (_uriFormKey.currentState!.validate()) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Processing Data')),
+              );
+              await ref
+                  .read(liveGraphSettingsManagerProvider.notifier)
+                  .setDuration(
+                    Duration(
+                      seconds: int.parse(_uriFormText.text),
+                    ),
+                  );
+            }
+          },
           child: const Text('Save'),
         ),
       ],

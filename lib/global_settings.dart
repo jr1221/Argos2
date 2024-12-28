@@ -110,7 +110,7 @@ class FavoriteTopicsManager extends _$FavoriteTopicsManager {
   Future<void> _updateTopics() async {
     await ref.read(sharedPrefsInstanceProvider).value?.setStringList(
           FAVORITE_TOPICS_KEY,
-          _topics.toList() ?? FAVORITE_TOPICS_DEFAULT,
+          _topics.toList(),
         );
   }
 
@@ -137,3 +137,25 @@ class FavoriteTopicsManager extends _$FavoriteTopicsManager {
 @riverpod
 Future<SharedPreferences> sharedPrefsInstance(final Ref ref) =>
     SharedPreferences.getInstance();
+
+@riverpod
+class LiveGraphSettingsManager extends _$LiveGraphSettingsManager {
+  @override
+  Duration build() {
+    final AsyncValue<SharedPreferences> prefs =
+        ref.watch(sharedPrefsInstanceProvider);
+
+    final int res = prefs.value?.getInt(LIVE_GRAPH_DURATION_KEY) ??
+        LIVE_GRAPH_DURATION_DEFAULT;
+
+    return Duration(seconds: res);
+  }
+
+  Future<void> setDuration(final Duration graphDir) async {
+    await ref
+        .read(sharedPrefsInstanceProvider)
+        .value
+        ?.setInt(LIVE_GRAPH_DURATION_KEY, graphDir.inSeconds);
+    ref.invalidateSelf();
+  }
+}

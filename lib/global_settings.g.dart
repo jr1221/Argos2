@@ -45,7 +45,7 @@ final connectionControlProvider =
 
 typedef _$ConnectionControl = AutoDisposeNotifier<ConnectionProps>;
 String _$favoriteTopicsManagerHash() =>
-    r'c506daa4619665cc1772bd5696858000b127547c';
+    r'507e017edf9fb00627dd769be9c9a71697676e66';
 
 /// See also [FavoriteTopicsManager].
 @ProviderFor(FavoriteTopicsManager)
@@ -61,5 +61,22 @@ final favoriteTopicsManagerProvider = AutoDisposeNotifierProvider<
 );
 
 typedef _$FavoriteTopicsManager = AutoDisposeNotifier<SplayTreeSet<String>>;
+String _$liveGraphSettingsManagerHash() =>
+    r'245cf0a896df07bf2e5315da4893fbd2df719d28';
+
+/// See also [LiveGraphSettingsManager].
+@ProviderFor(LiveGraphSettingsManager)
+final liveGraphSettingsManagerProvider =
+    AutoDisposeNotifierProvider<LiveGraphSettingsManager, Duration>.internal(
+  LiveGraphSettingsManager.new,
+  name: r'liveGraphSettingsManagerProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$liveGraphSettingsManagerHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LiveGraphSettingsManager = AutoDisposeNotifier<Duration>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
