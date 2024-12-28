@@ -3,6 +3,24 @@
 part of 'data_service.dart';
 
 // **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$PublicDataImpl _$$PublicDataImplFromJson(Map<String, dynamic> json) =>
+    _$PublicDataImpl(
+      values: (json['values'] as List<dynamic>)
+          .map((e) => (e as num).toDouble())
+          .toList(),
+      time: (json['time'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$PublicDataImplToJson(_$PublicDataImpl instance) =>
+    <String, dynamic>{
+      'values': instance.values,
+      'time': instance.time,
+    };
+
+// **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
@@ -177,7 +195,7 @@ class _GetDataWithRunIdProviderElement
 }
 
 String _$getMultiDataWithRunIdHash() =>
-    r'86795dc629085f0f160808b8df5072ec247c6314';
+    r'954c97fc763bf37a5a162842cc0bd1783da241a7';
 
 /// See also [getMultiDataWithRunId].
 @ProviderFor(getMultiDataWithRunId)
@@ -185,13 +203,13 @@ const getMultiDataWithRunIdProvider = GetMultiDataWithRunIdFamily();
 
 /// See also [getMultiDataWithRunId].
 class GetMultiDataWithRunIdFamily
-    extends Family<AsyncValue<List<List<PublicData>>>> {
+    extends Family<AsyncValue<Map<String, List<PublicData>>>> {
   /// See also [getMultiDataWithRunId].
   const GetMultiDataWithRunIdFamily();
 
   /// See also [getMultiDataWithRunId].
   GetMultiDataWithRunIdProvider call({
-    required List<String> topics,
+    required HashSet<PublicDataType> topics,
     required int runId,
   }) {
     return GetMultiDataWithRunIdProvider(
@@ -227,10 +245,10 @@ class GetMultiDataWithRunIdFamily
 
 /// See also [getMultiDataWithRunId].
 class GetMultiDataWithRunIdProvider
-    extends AutoDisposeFutureProvider<List<List<PublicData>>> {
+    extends AutoDisposeFutureProvider<Map<String, List<PublicData>>> {
   /// See also [getMultiDataWithRunId].
   GetMultiDataWithRunIdProvider({
-    required List<String> topics,
+    required HashSet<PublicDataType> topics,
     required int runId,
   }) : this._internal(
           (ref) => getMultiDataWithRunId(
@@ -262,12 +280,13 @@ class GetMultiDataWithRunIdProvider
     required this.runId,
   }) : super.internal();
 
-  final List<String> topics;
+  final HashSet<PublicDataType> topics;
   final int runId;
 
   @override
   Override overrideWith(
-    FutureOr<List<List<PublicData>>> Function(GetMultiDataWithRunIdRef provider)
+    FutureOr<Map<String, List<PublicData>>> Function(
+            GetMultiDataWithRunIdRef provider)
         create,
   ) {
     return ProviderOverride(
@@ -286,7 +305,8 @@ class GetMultiDataWithRunIdProvider
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<List<PublicData>>> createElement() {
+  AutoDisposeFutureProviderElement<Map<String, List<PublicData>>>
+      createElement() {
     return _GetMultiDataWithRunIdProviderElement(this);
   }
 
@@ -310,21 +330,22 @@ class GetMultiDataWithRunIdProvider
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 mixin GetMultiDataWithRunIdRef
-    on AutoDisposeFutureProviderRef<List<List<PublicData>>> {
+    on AutoDisposeFutureProviderRef<Map<String, List<PublicData>>> {
   /// The parameter `topics` of this provider.
-  List<String> get topics;
+  HashSet<PublicDataType> get topics;
 
   /// The parameter `runId` of this provider.
   int get runId;
 }
 
 class _GetMultiDataWithRunIdProviderElement
-    extends AutoDisposeFutureProviderElement<List<List<PublicData>>>
+    extends AutoDisposeFutureProviderElement<Map<String, List<PublicData>>>
     with GetMultiDataWithRunIdRef {
   _GetMultiDataWithRunIdProviderElement(super.provider);
 
   @override
-  List<String> get topics => (origin as GetMultiDataWithRunIdProvider).topics;
+  HashSet<PublicDataType> get topics =>
+      (origin as GetMultiDataWithRunIdProvider).topics;
   @override
   int get runId => (origin as GetMultiDataWithRunIdProvider).runId;
 }

@@ -1,35 +1,45 @@
 import 'dart:collection';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constants.dart';
+import 'services/datatype_service.dart';
 
+part 'global_settings.freezed.dart';
 part 'global_settings.g.dart';
 
 /// a package of all the current connection properties
-@immutable
-class ConnectionProps {
-  /// current uri, see [useMqtt] if the uri is [mqttUri] or [socketUri]
-  final Uri uri;
-
-  /// true if app is in MQTT mode
-  final bool useMqtt;
-
-  /// mqtt URI to use
-  final Uri mqttUri;
-
-  /// socket URI to use
-  final Uri socketUri;
-
-  const ConnectionProps(
-    this.uri,
-    this.mqttUri,
-    this.socketUri, {
-    required this.useMqtt,
-  });
+@freezed
+class ConnectionProps with _$ConnectionProps {
+  // /// current uri, see [useMqtt] if the uri is [mqttUri] or [socketUri]
+  // final Uri uri;
+  //
+  // /// true if app is in MQTT mode
+  // final bool useMqtt;
+  //
+  // /// mqtt URI to use
+  // final Uri mqttUri;
+  //
+  // /// socket URI to use
+  // final Uri socketUri;
+  //
+  // const ConnectionProps(
+  //   this.uri,
+  //   this.mqttUri,
+  //   this.socketUri, {
+  //   required this.useMqtt,
+  // });
+  //
+  const factory ConnectionProps({
+    required final Uri uri,
+    required final Uri mqttUri,
+    required final Uri socketUri,
+    required final bool useMqtt,
+  }) = _ConnectionProps;
 }
 
 @riverpod
@@ -54,9 +64,9 @@ class ConnectionControl extends _$ConnectionControl {
 
   /// build a ConnectionProps object from the internal state
   ConnectionProps get _conn => ConnectionProps(
-        (_useMqtt ? _mqttUri : _socketUri) ?? Uri.parse(BACKEND_URI_KEY),
-        _mqttUri ?? Uri.parse(MQTT_URI_KEY),
-        _socketUri ?? Uri.parse(BACKEND_URI_KEY),
+        uri: (_useMqtt ? _mqttUri : _socketUri) ?? Uri.parse(BACKEND_URI_KEY),
+        mqttUri: _mqttUri ?? Uri.parse(MQTT_URI_KEY),
+        socketUri: _socketUri ?? Uri.parse(BACKEND_URI_KEY),
         useMqtt: _useMqtt,
       );
 
@@ -133,10 +143,50 @@ class FavoriteTopicsManager extends _$FavoriteTopicsManager {
   }
 }
 
+@riverpod
+class GraphTopicsManager extends _$GraphTopicsManager {
+  HashSet<PublicDataType> _graphTopics = HashSet<PublicDataType>();
+
+  @override
+  HashSet<PublicDataType> build() {
+    ref.keepAlive();
+    return _graphTopics;
+  }
+
+  void setTopics(final List<PublicDataType> topics) {
+    _graphTopics = HashSet<PublicDataType>.from(topics);
+    state = _graphTopics;
+  }
+
+  void addTopic(final PublicDataType topic) {
+    if (_graphTopics.add(topic)) {
+      state = _graphTopics;
+    }
+  }
+}
+
+@riverpod
+class HistoricalGraphRunManager extends _$HistoricalGraphRunManager {
+  int _runId = 0;
+
+  @override
+  int build() {
+    ref.keepAlive();
+    return _runId;
+  }
+
+  void setRunId(final int runId) {
+    _runId = runId;
+    ref.invalidateSelf();
+  }
+}
+
 /// Get a shared preferences instance
 @riverpod
-Future<SharedPreferences> sharedPrefsInstance(final Ref ref) =>
-    SharedPreferences.getInstance();
+Future<SharedPreferences> sharedPrefsInstance(final Ref ref) {
+  ref.keepAlive();
+  return SharedPreferences.getInstance();
+}
 
 @riverpod
 class LiveGraphSettingsManager extends _$LiveGraphSettingsManager {

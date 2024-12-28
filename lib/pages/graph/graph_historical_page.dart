@@ -1,0 +1,142 @@
+import 'dart:collection';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+import '../../global_settings.dart';
+import '../../services/data_service.dart';
+import '../../services/datatype_service.dart';
+
+class GraphHistorical extends ConsumerStatefulWidget {
+  const GraphHistorical({super.key});
+
+  @override
+  ConsumerState<GraphHistorical> createState() => _GraphHistoricalState();
+}
+
+class _GraphHistoricalState extends ConsumerState<GraphHistorical> {
+  final Map<String, HistoricalGraphRenderInfo> info =
+      <String, HistoricalGraphRenderInfo>{};
+
+  List<LineSeries<PublicData, DateTime>> _fetchSeries() => info.values
+      .map((final HistoricalGraphRenderInfo e) => e.getSeries())
+      .toList();
+
+  List<ChartAxis> _fetchAxes() => info.values
+      .map((final HistoricalGraphRenderInfo e) => e.getAxis())
+      .toList();
+
+  @override
+  Widget build(final BuildContext context) {
+    final int runId = ref.watch(historicalGraphRunManagerProvider);
+    final HashSet<PublicDataType> topics =
+        ref.watch(graphTopicsManagerProvider);
+    final AsyncValue<Map<String, List<PublicData>>> data = ref.watch(
+      getMultiDataWithRunIdProvider(topics: topics, runId: runId),
+    );
+    info.clear();
+    switch (data) {
+      case AsyncData<Map<String, List<PublicData>>>(
+          :final Map<String, List<PublicData>> value
+        ):
+        for (final MapEntry<String, List<PublicData>> entry in value.entries) {
+          info[entry.key] = HistoricalGraphRenderInfo(
+            entry.key,
+            topics
+                .firstWhere((final PublicDataType e) => e.name == entry.key)
+                .unit,
+            entry.value,
+          );
+        }
+        return SfCartesianChart(
+          zoomPanBehavior: ZoomPanBehavior(
+            enableSelectionZooming: true,
+            enablePanning: true,
+            enableMouseWheelZooming: true,
+            enablePinching: true,
+          ),
+          legend:
+              const Legend(isVisible: true, position: LegendPosition.bottom),
+          trackballBehavior: TrackballBehavior(
+            activationMode: ActivationMode.singleTap,
+            enable: true,
+            tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+            markerSettings: const TrackballMarkerSettings(
+              markerVisibility: TrackballVisibilityMode.visible,
+            ),
+          ),
+          primaryXAxis: DateTimeAxis(
+            dateFormat: DateFormat.jms(),
+          ),
+          primaryYAxis: const NumericAxis(
+            isVisible: false,
+          ),
+          axes: _fetchAxes(),
+          series: _fetchSeries(),
+        );
+      case AsyncError<Object?>(:final Object? error):
+        return ErrorViewer(
+          error: error,
+          topics: topics,
+          runId: runId,
+        );
+      default:
+        return const Center(child: CircularProgressIndicator());
+    }
+  }
+}
+
+class ErrorViewer extends ConsumerWidget {
+  final Object? error;
+  final HashSet<PublicDataType> topics;
+  final int runId;
+  const ErrorViewer({
+    required this.error,
+    required this.topics,
+    required this.runId,
+    super.key,
+  });
+
+  @override
+  Widget build(final BuildContext context, final WidgetRef ref) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text('Error: $error'),
+          ElevatedButton(
+            onPressed: () {
+              ref.invalidate(
+                getMultiDataWithRunIdProvider(topics: topics, runId: runId),
+              );
+            },
+            child: const Text('Retry'),
+          ),
+        ],
+      );
+}
+
+class HistoricalGraphRenderInfo {
+  final String topic;
+  final String unit;
+  final List<PublicData> data;
+
+  HistoricalGraphRenderInfo(this.topic, this.unit, this.data);
+
+  LineSeries<PublicData, DateTime> getSeries() =>
+      LineSeries<PublicData, DateTime>(
+        name: topic,
+        dataSource: data,
+        yAxisName: topic,
+        xValueMapper: (final PublicData data, final int index) =>
+            DateTime.fromMillisecondsSinceEpoch(data.time),
+        yValueMapper: (final PublicData data, final int index) =>
+            data.values.first,
+      );
+
+  ChartAxis getAxis() => NumericAxis(
+        name: topic,
+        labelFormat: '{value} $unit',
+        title: AxisTitle(text: topic),
+      );
+}

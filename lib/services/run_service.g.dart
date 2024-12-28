@@ -3,6 +3,28 @@
 part of 'run_service.dart';
 
 // **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$PublicRunImpl _$$PublicRunImplFromJson(Map<String, dynamic> json) =>
+    _$PublicRunImpl(
+      id: (json['id'] as num).toInt(),
+      locationName: json['locationName'] as String,
+      driverName: json['driverName'] as String,
+      time: (json['time'] as num).toInt(),
+      notes: json['notes'] as String,
+    );
+
+Map<String, dynamic> _$$PublicRunImplToJson(_$PublicRunImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'locationName': instance.locationName,
+      'driverName': instance.driverName,
+      'time': instance.time,
+      'notes': instance.notes,
+    };
+
+// **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 

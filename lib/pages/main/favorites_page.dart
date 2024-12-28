@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../connection/base_data.dart';
-import '../global_settings.dart';
+import '../../connection/base_data.dart';
+import '../../global_settings.dart';
+import '../../services/datatype_service.dart';
 
 class FavoritesPage extends ConsumerWidget {
   const FavoritesPage({super.key});
@@ -112,8 +113,11 @@ class DataPoint extends ConsumerWidget {
                     ),
                     IconButton(
                       onPressed: () async {
+                        ref.read(graphTopicsManagerProvider.notifier).addTopic(
+                          PublicDataType(name: item.topic, unit: item.unit),
+                        );
                         await context.push(
-                          '/graphLive/${Uri.encodeComponent(item.topic)}',
+                          '/graph',
                         );
                       },
                       icon: const Icon(Icons.launch),

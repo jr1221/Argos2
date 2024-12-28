@@ -1,29 +1,14 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../global_settings.dart';
 
+part 'run_service.freezed.dart';
 part 'run_service.g.dart';
-
-/// A run, as given from Scylla
-class PublicRun {
-  final int id;
-  final String locationName;
-  final String driverName;
-  final int time;
-  final String notes;
-
-  PublicRun(this.id, this.locationName, this.driverName, this.time, this.notes);
-
-  PublicRun.fromJson(final Map<String, dynamic> json)
-      : id = json['id'] as int,
-        locationName = json['locationName'] as String,
-        driverName = json['driverName'] as String,
-        time = json['time'] as int,
-        notes = json['notes'] as String;
-}
 
 /// handle the /runs endpoint
 @riverpod
@@ -47,4 +32,19 @@ class RunHandler extends _$RunHandler {
     ref.invalidateSelf();
     return PublicRun.fromJson(json);
   }
+}
+
+/// A run, as given from Scylla
+@freezed
+class PublicRun with _$PublicRun {
+  const factory PublicRun({
+    required final int id,
+    required final String locationName,
+    required final String driverName,
+    required final int time,
+    required final String notes,
+  }) = _PublicRun;
+
+  factory PublicRun.fromJson(final Map<String, Object?> json) =>
+      _$PublicRunFromJson(json);
 }

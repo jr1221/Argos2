@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'global_settings.dart';
-import 'pages/car_command_page.dart';
-import 'pages/data_page.dart';
-import 'pages/favorites_page.dart';
-import 'pages/graph_page.dart';
+import 'pages/graph/graph_page.dart';
+import 'pages/main/car_command_page.dart';
+import 'pages/main/data_page.dart';
+import 'pages/main/favorites_page.dart';
 import 'pages/settings_page.dart';
 import 'persistent_widgets.dart';
 
@@ -70,10 +70,15 @@ class MyApp extends StatelessWidget {
             const SettingsPage(),
       ),
       GoRoute(
-        path: '/graphLive/:topic',
+        path: '/graph',
         builder: (final BuildContext context, final GoRouterState state) =>
-            GraphPage(topic: state.pathParameters['topic'] ?? 'zzz'),
-      )
+            const GraphPage(),
+      ),
+      GoRoute(
+        path: '/topicsSelector',
+        builder: (final BuildContext context, final GoRouterState state) =>
+            const TopicsSelector(),
+      ),
     ],
   );
 

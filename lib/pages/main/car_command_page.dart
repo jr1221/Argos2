@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../connection/base_data.dart';
-import '../global_settings.dart';
-import '../services/car_command.dart';
+import '../../connection/base_data.dart';
+import '../../global_settings.dart';
+import '../../services/car_command.dart';
 
 class CarCommandPage extends ConsumerWidget {
   const CarCommandPage({super.key});
