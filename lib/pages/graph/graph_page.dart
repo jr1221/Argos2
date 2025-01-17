@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
 
+import '../../connection/base_data.dart';
 import '../../global_settings.dart';
 import '../../services/datatype_service.dart';
 import '../../services/run_service.dart';
@@ -32,7 +33,7 @@ class _GraphPageState extends ConsumerState<GraphPage> {
 
     // get some runs
     final List<PublicRun> runs =
-        ref.watch(runHandlerProvider).value ?? <PublicRun>[];
+        ref.watch(runHandlerProvider).valueOrNull ?? <PublicRun>[];
 
     final int currentRun = ref.watch(historicalGraphRunManagerProvider);
 
@@ -118,8 +119,15 @@ class _TopicsSelectorState extends ConsumerState<TopicsSelector> {
   Widget build(final BuildContext context) {
     final HashSet<PublicDataType> selectedTopics =
         ref.watch(graphTopicsManagerProvider);
-    final List<PublicDataType>? availTopics =
-        ref.watch(getDataTypesProvider).value;
+    final List<PublicDataType>? availTopics = ref
+        .watch(capModelHolderProvider)
+        .valueOrNull
+        ?.values
+        .map(
+          (final NetFieldCapture<(List<double>, DateTime)> e) =>
+              e.publicDataType,
+        )
+        .toList();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Topics Selection for Graph'),
