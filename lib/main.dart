@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import 'global_settings.dart';
 import 'pages/graph/graph_page.dart';
+import 'pages/main/camera_page.dart';
 import 'pages/main/car_command_page.dart';
 import 'pages/main/data_page.dart';
 import 'pages/main/favorites_page.dart';
 import 'pages/settings_page.dart';
 import 'persistent_widgets.dart';
+
 
 void main() {
   runApp(
@@ -39,6 +41,16 @@ class MyApp extends StatelessWidget {
                 builder:
                     (final BuildContext context, final GoRouterState state) =>
                         const DataPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/cam',
+                builder:
+                    (final BuildContext context, final GoRouterState state) =>
+                        const CameraPage(),
               ),
             ],
           ),
@@ -106,6 +118,10 @@ class MainScreens extends ConsumerWidget {
       label: 'Data',
     ),
     BottomNavigationBarItem(
+      icon: Icon(Icons.video_camera_front_outlined),
+      label: 'Cam',
+    ),
+    BottomNavigationBarItem(
       icon: Icon(Icons.star_outlined),
       label: 'Favorites',
     ),
@@ -137,6 +153,7 @@ class MainScreens extends ConsumerWidget {
       body: navShell,
       bottomSheet: useMqtt ? null : const BottomSysInfo(),
       bottomNavigationBar: BottomNavigationBar(
+        useLegacyColorScheme: false,
         currentIndex: navShell.currentIndex,
         onTap: navShell.goBranch,
         items: tabs,

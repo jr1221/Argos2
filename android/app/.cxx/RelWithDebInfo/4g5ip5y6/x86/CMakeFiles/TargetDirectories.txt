@@ -1,0 +1,2 @@
+/home/jack/Projects/Argos2/android/app/.cxx/RelWithDebInfo/4g5ip5y6/x86/CMakeFiles/edit_cache.dir
+/home/jack/Projects/Argos2/android/app/.cxx/RelWithDebInfo/4g5ip5y6/x86/CMakeFiles/rebuild_cache.dir

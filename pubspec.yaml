@@ -49,6 +49,10 @@ dependencies:
   multi_dropdown: ^3.0.1
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
+  # fvp:
+  #   git: https://github.com/wang-bin/fvp.git
+  video_player: ^2.9.3
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
