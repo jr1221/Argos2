@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,7 +11,6 @@ import 'pages/main/data_page.dart';
 import 'pages/main/favorites_page.dart';
 import 'pages/settings_page.dart';
 import 'persistent_widgets.dart';
-
 
 void main() {
   runApp(
@@ -99,6 +99,20 @@ class MyApp extends StatelessWidget {
   Widget build(final BuildContext context) => MaterialApp.router(
         title: 'Cool',
         routerConfig: _router,
+        shortcuts:
+            Map<ShortcutActivator, Intent>.from(WidgetsApp.defaultShortcuts)
+              ..addAll(<ShortcutActivator, Intent>{
+                LogicalKeySet(LogicalKeyboardKey.select):
+                    const ActivateIntent(),
+                const SingleActivator(LogicalKeyboardKey.arrowDown):
+                    const DirectionalFocusIntent(TraversalDirection.down),
+                const SingleActivator(LogicalKeyboardKey.arrowUp):
+                    const DismissIntent(),
+                const SingleActivator(LogicalKeyboardKey.arrowLeft):
+                    const PreviousFocusIntent(),
+                const SingleActivator(LogicalKeyboardKey.arrowRight):
+                    const NextFocusIntent(),
+              }),
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: const Color(0xFFEF4345),
@@ -112,20 +126,20 @@ class MyApp extends StatelessWidget {
 class MainScreens extends ConsumerWidget {
   final StatefulNavigationShell navShell;
 
-  static const List<BottomNavigationBarItem> tabs = <BottomNavigationBarItem>[
-    BottomNavigationBarItem(
+  static const List<NavigationDestination> tabs = <NavigationDestination>[
+    NavigationDestination(
       icon: Icon(Icons.data_exploration_outlined),
       label: 'Data',
     ),
-    BottomNavigationBarItem(
+    NavigationDestination(
       icon: Icon(Icons.video_camera_front_outlined),
       label: 'Cam',
     ),
-    BottomNavigationBarItem(
+    NavigationDestination(
       icon: Icon(Icons.star_outlined),
       label: 'Favorites',
     ),
-    BottomNavigationBarItem(
+    NavigationDestination(
       icon: Icon(Icons.settings_remote_outlined),
       label: 'Commands',
     ),
@@ -152,11 +166,10 @@ class MainScreens extends ConsumerWidget {
       ),
       body: navShell,
       bottomSheet: useMqtt ? null : const BottomSysInfo(),
-      bottomNavigationBar: BottomNavigationBar(
-        useLegacyColorScheme: false,
-        currentIndex: navShell.currentIndex,
-        onTap: navShell.goBranch,
-        items: tabs,
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: navShell.currentIndex,
+        onDestinationSelected: navShell.goBranch,
+        destinations: tabs,
       ),
     );
   }

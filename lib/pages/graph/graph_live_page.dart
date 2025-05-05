@@ -93,6 +93,7 @@ class _GraphLiveState extends ConsumerState<GraphLive> {
         primaryYAxis: const NumericAxis(
           isVisible: false,
         ),
+        legend: const Legend(isVisible: true, position: LegendPosition.bottom),
         series: _fetchSeries(),
         axes: _fetchAxes(),
       );

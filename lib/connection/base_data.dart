@@ -179,7 +179,7 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
         print('Connected to socket!');
       })
       //When an event received from server, data is added to the stream
-      ..on('message', (final dynamic data) {
+      ..on('data', (final dynamic data) {
         final ClientData decodedVal = ClientData.fromJson(jsonDecode(data));
         // do special case if its the first time this value has been seen
         if (!cap.containsKey(decodedVal.name)) {
