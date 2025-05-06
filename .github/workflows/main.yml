@@ -24,7 +24,7 @@ jobs:
         run: flutter pub get
 
       - name: Build
-        run: flutter build web --base-href='/argos2/'
+        run: flutter build web --base-href='/Argos2/'
 
       - name: Upload static files as artifact
         id: deployment
