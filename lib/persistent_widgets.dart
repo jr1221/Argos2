@@ -140,7 +140,7 @@ class BottomSysInfo extends ConsumerWidget {
               },
             ),
             StreamBuilder<(List<double>, DateTime)>(
-              stream: value['Viewers']?.getStream(),
+              stream: value['Argos/Viewers']?.getStream(),
               builder: (
                 final BuildContext context,
                 final AsyncSnapshot<(List<double>, DateTime)> snapshot,
@@ -154,6 +154,24 @@ class BottomSysInfo extends ConsumerWidget {
                     return Text(
                       'Current Viewers: ${snapshot.data?.$1.first.round()}',
                     );
+                  case ConnectionState.done:
+                    return const Text('DONE');
+                }
+              },
+            ),
+            StreamBuilder<(List<double>, DateTime)>(
+              stream: value['Argos/Message_Rate']?.getStream(),
+              builder: (
+                final BuildContext context,
+                final AsyncSnapshot<(List<double>, DateTime)> snapshot,
+              ) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                    return const Text('NONE');
+                  case ConnectionState.waiting:
+                    return const Text('WAITING');
+                  case ConnectionState.active:
+                    return Text('${snapshot.data?.$1.first} msgs/sec');
                   case ConnectionState.done:
                     return const Text('DONE');
                 }

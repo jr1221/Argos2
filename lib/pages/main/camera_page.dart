@@ -31,9 +31,10 @@ class _CamVideoPlayerState extends State<CamVideoPlayer> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(
-        Uri.parse('rtsp://192.168.100.11:8554/frontcam'))
+      Uri.parse('rtsp://192.168.100.11:8554/frontcam'),
+    )
       //Uri.parse('http://192.168.100.11:8888/frontcam/index.m3u8')) // freezes up
-      ..initialize().then((_) {
+      ..initialize().then((final _) {
         // Ensure the first frame is shown after the video is initialized,
         // even before the play button has been pressed.
         setState(() {});
@@ -95,7 +96,8 @@ class HowToCam extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               if (!await launchUrl(
-                  Uri.parse('http://192.168.100.11:8889/frontcam'))) {
+                Uri.parse('http://192.168.100.11:8889/frontcam'),
+              )) {
                 throw Exception('Could not launch via WebRTC');
               }
             },
@@ -107,12 +109,13 @@ class HowToCam extends StatelessWidget {
           TextButton(
             onPressed: () async {
               if (!await launchUrl(
-                  Uri.parse('http://192.168.100.11:8888/frontcam'))) {
+                Uri.parse('http://192.168.100.11:8888/frontcam'),
+              )) {
                 throw Exception('Could not launch via HLS');
               }
             },
             child: const Text('Launch HLS Stream'),
-          )
+          ),
         ],
       );
 }

@@ -138,8 +138,9 @@ class LiveGraphRenderInfo {
         ) {
           ctrlr = controller;
         },
-        yAxisName: item.topic,
         dataSource: data,
+        name: item.topic,
+        yAxisName: item.topic,
         xValueMapper: (final ChartData data, final int index) => data.x,
         yValueMapper: (final ChartData data, final int index) => data.y,
       );

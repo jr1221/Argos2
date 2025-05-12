@@ -16,9 +16,16 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ConnectionProps {
+  /// current uri, see [useMqtt] if the uri is [mqttUri] or [socketUri]
   Uri get uri => throw _privateConstructorUsedError;
+
+  /// mqtt URI to use
   Uri get mqttUri => throw _privateConstructorUsedError;
+
+  /// socket URI to use
   Uri get socketUri => throw _privateConstructorUsedError;
+
+  /// true if app is in MQTT mode
   bool get useMqtt => throw _privateConstructorUsedError;
 
   /// Create a copy of ConnectionProps
@@ -139,12 +146,19 @@ class _$ConnectionPropsImpl
       required this.socketUri,
       required this.useMqtt});
 
+  /// current uri, see [useMqtt] if the uri is [mqttUri] or [socketUri]
   @override
   final Uri uri;
+
+  /// mqtt URI to use
   @override
   final Uri mqttUri;
+
+  /// socket URI to use
   @override
   final Uri socketUri;
+
+  /// true if app is in MQTT mode
   @override
   final bool useMqtt;
 
@@ -197,12 +211,19 @@ abstract class _ConnectionProps implements ConnectionProps {
       required final Uri socketUri,
       required final bool useMqtt}) = _$ConnectionPropsImpl;
 
+  /// current uri, see [useMqtt] if the uri is [mqttUri] or [socketUri]
   @override
   Uri get uri;
+
+  /// mqtt URI to use
   @override
   Uri get mqttUri;
+
+  /// socket URI to use
   @override
   Uri get socketUri;
+
+  /// true if app is in MQTT mode
   @override
   bool get useMqtt;
 

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'global_settings.dart';
 import 'pages/graph/graph_page.dart';
+import 'pages/main/argos_settings_page.dart';
 import 'pages/main/camera_page.dart';
 import 'pages/main/car_command_page.dart';
 import 'pages/main/data_page.dart';
@@ -44,13 +45,23 @@ class MyApp extends StatelessWidget {
               ),
             ],
           ),
+          // StatefulShellBranch(
+          //   routes: <RouteBase>[
+          //     GoRoute(
+          //       path: '/cam',
+          //       builder:
+          //           (final BuildContext context, final GoRouterState state) =>
+          //               const CameraPage(),
+          //     ),
+          //   ],
+          // ),
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: '/cam',
+                path: '/argos_settings',
                 builder:
                     (final BuildContext context, final GoRouterState state) =>
-                        const CameraPage(),
+                        const ArgosSettingsPage(),
               ),
             ],
           ),
@@ -131,10 +142,11 @@ class MainScreens extends ConsumerWidget {
       icon: Icon(Icons.data_exploration_outlined),
       label: 'Data',
     ),
-    NavigationDestination(
-      icon: Icon(Icons.video_camera_front_outlined),
-      label: 'Cam',
-    ),
+    // NavigationDestination(
+    //   icon: Icon(Icons.video_camera_front_outlined),
+    //   label: 'Cam',
+    // ),
+    NavigationDestination(icon: Icon(Icons.construction), label: 'Backend'),
     NavigationDestination(
       icon: Icon(Icons.star_outlined),
       label: 'Favorites',

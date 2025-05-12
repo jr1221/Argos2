@@ -30,7 +30,7 @@ Map<String, dynamic> _$$ClientDataImplToJson(_$ClientDataImpl instance) =>
 // RiverpodGenerator
 // **************************************************************************
 
-String _$capModelHolderHash() => r'6ed298df7fe99c5509a1c308e89c11cccaa04b60';
+String _$capModelHolderHash() => r'47c11a6d07e4b620a10300e0d20d98899030035d';
 
 /// See also [capModelHolder].
 @ProviderFor(capModelHolder)

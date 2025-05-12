@@ -45,7 +45,7 @@ final connectionControlProvider =
 
 typedef _$ConnectionControl = AutoDisposeNotifier<ConnectionProps>;
 String _$favoriteTopicsManagerHash() =>
-    r'161d74f7a1fe32dab80f1b7b3b8edbe48547191a';
+    r'b359a7b647b6d27abf9ebe8260fdae83e26098f0';
 
 /// See also [FavoriteTopicsManager].
 @ProviderFor(FavoriteTopicsManager)
