@@ -9,21 +9,6 @@ import 'global_settings.dart';
 import 'services/datatype_service.dart';
 import 'services/run_service.dart';
 
-/// A button to enter settings, should be in actions[]
-class SettingsButton extends StatelessWidget {
-  const SettingsButton({
-    super.key,
-  });
-
-  @override
-  Widget build(final BuildContext context) => IconButton(
-        icon: const Icon(
-          Icons.settings,
-        ),
-        onPressed: () async => context.push('/settings'),
-      );
-}
-
 class GraphFavoritesButton extends ConsumerWidget {
   const GraphFavoritesButton({super.key});
 

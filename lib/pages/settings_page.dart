@@ -9,13 +9,7 @@ class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
-  Widget build(final BuildContext context) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Settings'),
-        ),
-        body: const Center(child: Settings()),
-      );
+  Widget build(final BuildContext context) => const Center(child: Settings());
 }
 
 class Settings extends StatelessWidget {
