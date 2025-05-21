@@ -204,6 +204,31 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
           );
         }
       })
+      ..on('metadata', (final dynamic data) {
+        final ClientData decodedVal = ClientData.fromJson(jsonDecode(data));
+        // do special case if its the first time this value has been seen
+        if (!cap.containsKey(decodedVal.name)) {
+          cap[decodedVal.name] = NetFieldCapture<(List<double>, DateTime)>(
+            decodedVal.name,
+            decodedVal.unit,
+          );
+          cap[decodedVal.name]?.addValue(
+            (
+              decodedVal.values,
+              DateTime.fromMillisecondsSinceEpoch(decodedVal.timestamp)
+            ),
+          );
+          streamController.add(cap);
+          // we must rebuild the whole UI on a new topic
+        } else {
+          cap[decodedVal.name]?.addValue(
+            (
+              decodedVal.values,
+              DateTime.fromMillisecondsSinceEpoch(decodedVal.timestamp)
+            ),
+          );
+        }
+      })
       ..onDisconnect((final _) => print('disconnect'));
 
     yield* streamController.stream;
