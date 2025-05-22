@@ -14,7 +14,7 @@ part 'dashboard_service.freezed.dart';
 @freezed
 class DashboardConfig with _$DashboardConfig {
   const factory DashboardConfig({
-    required final List<String> data,
+    required final List<String> topics,
     required final int crossAxisCount,
   }) = _DashboardConfig;
 
@@ -36,43 +36,72 @@ class AvailableDashboardsManager extends _$AvailableDashboardsManager {
     return _dashes.toList();
   }
 
-  Future<void> _updateTopics() async {
+  Future<void> _updateDashes() async {
     await ref
         .read(sharedPrefsInstanceProvider)
         .value
         ?.setStringList(DASHBOARD_LIST_KEY, _dashes.toList());
   }
 
-  Future<void> addDash(final String topic) async {
-    _dashes.add(topic);
-    await _updateTopics();
+  Future<void> addDash(final String dashName) async {
+    _dashes.add(dashName);
+    await _updateDashes();
     ref.invalidateSelf();
   }
 
-  Future<void> removeDash(final String topic) async {
-    _dashes.remove(topic);
-    await _updateTopics();
-    ref.invalidateSelf();
-  }
-
-  Future<void> clearDashes() async {
-    _dashes.clear();
-    await _updateTopics();
+  Future<void> removeDash(final String dashName) async {
+    _dashes.remove(dashName);
+    await ref
+        .read(sharedPrefsInstanceProvider)
+        .value
+        ?.remove('$DASHBOARD_TOPICS_KEY_PREFIX$dashName');
+    await ref
+        .read(sharedPrefsInstanceProvider)
+        .value
+        ?.remove('$DASHBOARD_AXIS_CNT_KEY_PREFIX$dashName');
+    await _updateDashes();
     ref.invalidateSelf();
   }
 }
 
 @riverpod
-DashboardConfig getDashboardConf(final Ref ref,
-    {required final String dashName}) {
-  return DashboardConfig(data: [
-    "BMS/Pack/Current",
-    "BMS/Pack/SOC",
-    "DTI/Power/DC_Current",
-    "MPU/State/Speed",
-    "MPU/State/Mode",
-    "MPU/State/ModeIndex",
-    "BMS/Cells/Temp_High_Value",
-    "BMS/Cells/Temp_Low_Value"
-  ], crossAxisCount: 5);
+class DashboardConf extends _$DashboardConf {
+  DashboardConfig _conf =
+      const DashboardConfig(topics: <String>[], crossAxisCount: 1);
+
+  @override
+  DashboardConfig build({required final String dashName}) {
+    final AsyncValue<SharedPreferences> prefs =
+        ref.watch(sharedPrefsInstanceProvider);
+    final List<String>? topics =
+        prefs.value?.getStringList('$DASHBOARD_TOPICS_KEY_PREFIX$dashName');
+    final int? axisCnt =
+        prefs.value?.getInt('$DASHBOARD_AXIS_CNT_KEY_PREFIX$dashName');
+    _conf = DashboardConfig(
+      crossAxisCount: axisCnt ?? 1,
+      topics: topics ?? <String>[],
+    );
+    return _conf;
+  }
+
+  Future<void> _updateConf() async {
+    final SharedPreferences? prefs =
+        ref.read(sharedPrefsInstanceProvider).value;
+    await prefs?.setStringList(
+        '$DASHBOARD_TOPICS_KEY_PREFIX$dashName', _conf.topics);
+    await prefs?.setInt(
+        '$DASHBOARD_AXIS_CNT_KEY_PREFIX$dashName', _conf.crossAxisCount);
+  }
+
+  Future<void> setTopics(final List<String> topics) async {
+    _conf = _conf.copyWith(topics: topics);
+    await _updateConf();
+    ref.invalidateSelf();
+  }
+
+  Future<void> setCrossAxisCnt(final int cnt) async {
+    _conf = _conf.copyWith(crossAxisCount: cnt);
+    await _updateConf();
+    ref.invalidateSelf();
+  }
 }

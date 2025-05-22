@@ -9,14 +9,15 @@ part of 'dashboard_service.dart';
 _$DashboardConfigImpl _$$DashboardConfigImplFromJson(
         Map<String, dynamic> json) =>
     _$DashboardConfigImpl(
-      data: (json['data'] as List<dynamic>).map((e) => e as String).toList(),
+      topics:
+          (json['topics'] as List<dynamic>).map((e) => e as String).toList(),
       crossAxisCount: (json['crossAxisCount'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$DashboardConfigImplToJson(
         _$DashboardConfigImpl instance) =>
     <String, dynamic>{
-      'data': instance.data,
+      'topics': instance.topics,
       'crossAxisCount': instance.crossAxisCount,
     };
 
@@ -24,7 +25,24 @@ Map<String, dynamic> _$$DashboardConfigImplToJson(
 // RiverpodGenerator
 // **************************************************************************
 
-String _$getDashboardConfHash() => r'd72ea0bceceb3e8d13466618dc10a6c5f88a8646';
+String _$availableDashboardsManagerHash() =>
+    r'dc8f9f50074a275b1e0c96c57387ba672d848634';
+
+/// See also [AvailableDashboardsManager].
+@ProviderFor(AvailableDashboardsManager)
+final availableDashboardsManagerProvider = AutoDisposeNotifierProvider<
+    AvailableDashboardsManager, List<String>>.internal(
+  AvailableDashboardsManager.new,
+  name: r'availableDashboardsManagerProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$availableDashboardsManagerHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$AvailableDashboardsManager = AutoDisposeNotifier<List<String>>;
+String _$dashboardConfHash() => r'0c3165333ca68977b4288409c32eacfafecd6341';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -47,27 +65,36 @@ class _SystemHash {
   }
 }
 
-/// See also [getDashboardConf].
-@ProviderFor(getDashboardConf)
-const getDashboardConfProvider = GetDashboardConfFamily();
+abstract class _$DashboardConf
+    extends BuildlessAutoDisposeNotifier<DashboardConfig> {
+  late final String dashName;
 
-/// See also [getDashboardConf].
-class GetDashboardConfFamily extends Family<DashboardConfig> {
-  /// See also [getDashboardConf].
-  const GetDashboardConfFamily();
+  DashboardConfig build({
+    required String dashName,
+  });
+}
 
-  /// See also [getDashboardConf].
-  GetDashboardConfProvider call({
+/// See also [DashboardConf].
+@ProviderFor(DashboardConf)
+const dashboardConfProvider = DashboardConfFamily();
+
+/// See also [DashboardConf].
+class DashboardConfFamily extends Family<DashboardConfig> {
+  /// See also [DashboardConf].
+  const DashboardConfFamily();
+
+  /// See also [DashboardConf].
+  DashboardConfProvider call({
     required String dashName,
   }) {
-    return GetDashboardConfProvider(
+    return DashboardConfProvider(
       dashName: dashName,
     );
   }
 
   @override
-  GetDashboardConfProvider getProviderOverride(
-    covariant GetDashboardConfProvider provider,
+  DashboardConfProvider getProviderOverride(
+    covariant DashboardConfProvider provider,
   ) {
     return call(
       dashName: provider.dashName,
@@ -86,32 +113,30 @@ class GetDashboardConfFamily extends Family<DashboardConfig> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'getDashboardConfProvider';
+  String? get name => r'dashboardConfProvider';
 }
 
-/// See also [getDashboardConf].
-class GetDashboardConfProvider extends AutoDisposeProvider<DashboardConfig> {
-  /// See also [getDashboardConf].
-  GetDashboardConfProvider({
+/// See also [DashboardConf].
+class DashboardConfProvider
+    extends AutoDisposeNotifierProviderImpl<DashboardConf, DashboardConfig> {
+  /// See also [DashboardConf].
+  DashboardConfProvider({
     required String dashName,
   }) : this._internal(
-          (ref) => getDashboardConf(
-            ref as GetDashboardConfRef,
-            dashName: dashName,
-          ),
-          from: getDashboardConfProvider,
-          name: r'getDashboardConfProvider',
+          () => DashboardConf()..dashName = dashName,
+          from: dashboardConfProvider,
+          name: r'dashboardConfProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$getDashboardConfHash,
-          dependencies: GetDashboardConfFamily._dependencies,
+                  : _$dashboardConfHash,
+          dependencies: DashboardConfFamily._dependencies,
           allTransitiveDependencies:
-              GetDashboardConfFamily._allTransitiveDependencies,
+              DashboardConfFamily._allTransitiveDependencies,
           dashName: dashName,
         );
 
-  GetDashboardConfProvider._internal(
+  DashboardConfProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -124,13 +149,20 @@ class GetDashboardConfProvider extends AutoDisposeProvider<DashboardConfig> {
   final String dashName;
 
   @override
-  Override overrideWith(
-    DashboardConfig Function(GetDashboardConfRef provider) create,
+  DashboardConfig runNotifierBuild(
+    covariant DashboardConf notifier,
   ) {
+    return notifier.build(
+      dashName: dashName,
+    );
+  }
+
+  @override
+  Override overrideWith(DashboardConf Function() create) {
     return ProviderOverride(
       origin: this,
-      override: GetDashboardConfProvider._internal(
-        (ref) => create(ref as GetDashboardConfRef),
+      override: DashboardConfProvider._internal(
+        () => create()..dashName = dashName,
         from: from,
         name: null,
         dependencies: null,
@@ -142,13 +174,14 @@ class GetDashboardConfProvider extends AutoDisposeProvider<DashboardConfig> {
   }
 
   @override
-  AutoDisposeProviderElement<DashboardConfig> createElement() {
-    return _GetDashboardConfProviderElement(this);
+  AutoDisposeNotifierProviderElement<DashboardConf, DashboardConfig>
+      createElement() {
+    return _DashboardConfProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is GetDashboardConfProvider && other.dashName == dashName;
+    return other is DashboardConfProvider && other.dashName == dashName;
   }
 
   @override
@@ -162,36 +195,18 @@ class GetDashboardConfProvider extends AutoDisposeProvider<DashboardConfig> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin GetDashboardConfRef on AutoDisposeProviderRef<DashboardConfig> {
+mixin DashboardConfRef on AutoDisposeNotifierProviderRef<DashboardConfig> {
   /// The parameter `dashName` of this provider.
   String get dashName;
 }
 
-class _GetDashboardConfProviderElement
-    extends AutoDisposeProviderElement<DashboardConfig>
-    with GetDashboardConfRef {
-  _GetDashboardConfProviderElement(super.provider);
+class _DashboardConfProviderElement
+    extends AutoDisposeNotifierProviderElement<DashboardConf, DashboardConfig>
+    with DashboardConfRef {
+  _DashboardConfProviderElement(super.provider);
 
   @override
-  String get dashName => (origin as GetDashboardConfProvider).dashName;
+  String get dashName => (origin as DashboardConfProvider).dashName;
 }
-
-String _$availableDashboardsManagerHash() =>
-    r'5f954ebcc54b9bbce6dc4dd545de1abd49b0455f';
-
-/// See also [AvailableDashboardsManager].
-@ProviderFor(AvailableDashboardsManager)
-final availableDashboardsManagerProvider = AutoDisposeNotifierProvider<
-    AvailableDashboardsManager, List<String>>.internal(
-  AvailableDashboardsManager.new,
-  name: r'availableDashboardsManagerProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$availableDashboardsManagerHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$AvailableDashboardsManager = AutoDisposeNotifier<List<String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

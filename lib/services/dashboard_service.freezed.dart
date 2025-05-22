@@ -20,7 +20,7 @@ DashboardConfig _$DashboardConfigFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$DashboardConfig {
-  List<String> get data => throw _privateConstructorUsedError;
+  List<String> get topics => throw _privateConstructorUsedError;
   int get crossAxisCount => throw _privateConstructorUsedError;
 
   /// Serializes this DashboardConfig to a JSON map.
@@ -39,7 +39,7 @@ abstract class $DashboardConfigCopyWith<$Res> {
           DashboardConfig value, $Res Function(DashboardConfig) then) =
       _$DashboardConfigCopyWithImpl<$Res, DashboardConfig>;
   @useResult
-  $Res call({List<String> data, int crossAxisCount});
+  $Res call({List<String> topics, int crossAxisCount});
 }
 
 /// @nodoc
@@ -57,13 +57,13 @@ class _$DashboardConfigCopyWithImpl<$Res, $Val extends DashboardConfig>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? data = null,
+    Object? topics = null,
     Object? crossAxisCount = null,
   }) {
     return _then(_value.copyWith(
-      data: null == data
-          ? _value.data
-          : data // ignore: cast_nullable_to_non_nullable
+      topics: null == topics
+          ? _value.topics
+          : topics // ignore: cast_nullable_to_non_nullable
               as List<String>,
       crossAxisCount: null == crossAxisCount
           ? _value.crossAxisCount
@@ -81,7 +81,7 @@ abstract class _$$DashboardConfigImplCopyWith<$Res>
       __$$DashboardConfigImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<String> data, int crossAxisCount});
+  $Res call({List<String> topics, int crossAxisCount});
 }
 
 /// @nodoc
@@ -97,13 +97,13 @@ class __$$DashboardConfigImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? data = null,
+    Object? topics = null,
     Object? crossAxisCount = null,
   }) {
     return _then(_$DashboardConfigImpl(
-      data: null == data
-          ? _value._data
-          : data // ignore: cast_nullable_to_non_nullable
+      topics: null == topics
+          ? _value._topics
+          : topics // ignore: cast_nullable_to_non_nullable
               as List<String>,
       crossAxisCount: null == crossAxisCount
           ? _value.crossAxisCount
@@ -117,18 +117,18 @@ class __$$DashboardConfigImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DashboardConfigImpl implements _DashboardConfig {
   const _$DashboardConfigImpl(
-      {required final List<String> data, required this.crossAxisCount})
-      : _data = data;
+      {required final List<String> topics, required this.crossAxisCount})
+      : _topics = topics;
 
   factory _$DashboardConfigImpl.fromJson(Map<String, dynamic> json) =>
       _$$DashboardConfigImplFromJson(json);
 
-  final List<String> _data;
+  final List<String> _topics;
   @override
-  List<String> get data {
-    if (_data is EqualUnmodifiableListView) return _data;
+  List<String> get topics {
+    if (_topics is EqualUnmodifiableListView) return _topics;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_data);
+    return EqualUnmodifiableListView(_topics);
   }
 
   @override
@@ -136,7 +136,7 @@ class _$DashboardConfigImpl implements _DashboardConfig {
 
   @override
   String toString() {
-    return 'DashboardConfig(data: $data, crossAxisCount: $crossAxisCount)';
+    return 'DashboardConfig(topics: $topics, crossAxisCount: $crossAxisCount)';
   }
 
   @override
@@ -144,15 +144,15 @@ class _$DashboardConfigImpl implements _DashboardConfig {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DashboardConfigImpl &&
-            const DeepCollectionEquality().equals(other._data, _data) &&
+            const DeepCollectionEquality().equals(other._topics, _topics) &&
             (identical(other.crossAxisCount, crossAxisCount) ||
                 other.crossAxisCount == crossAxisCount));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_data), crossAxisCount);
+  int get hashCode => Object.hash(runtimeType,
+      const DeepCollectionEquality().hash(_topics), crossAxisCount);
 
   /// Create a copy of DashboardConfig
   /// with the given fields replaced by the non-null parameter values.
@@ -173,14 +173,14 @@ class _$DashboardConfigImpl implements _DashboardConfig {
 
 abstract class _DashboardConfig implements DashboardConfig {
   const factory _DashboardConfig(
-      {required final List<String> data,
+      {required final List<String> topics,
       required final int crossAxisCount}) = _$DashboardConfigImpl;
 
   factory _DashboardConfig.fromJson(Map<String, dynamic> json) =
       _$DashboardConfigImpl.fromJson;
 
   @override
-  List<String> get data;
+  List<String> get topics;
   @override
   int get crossAxisCount;
 

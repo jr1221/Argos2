@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../connection/base_data.dart';
 import '../../global_settings.dart';
@@ -211,7 +212,7 @@ Future<bool?> _confirmationDialog(
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(true);
+              context.pop(true);
             },
             child: const Text(
               'Yes, send to car',
@@ -219,9 +220,7 @@ Future<bool?> _confirmationDialog(
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: context.pop,
             child: const Text(
               'no, go back',
               textAlign: TextAlign.end,

@@ -7,7 +7,7 @@ import 'global_settings.dart';
 import 'pages/graph/graph_page.dart';
 import 'pages/main/argos_settings_page.dart';
 import 'pages/main/car_command_page.dart';
-import 'pages/main/dashboard_page.dart';
+import 'pages/dashboard/dashboard_page.dart';
 import 'pages/main/data_page.dart';
 import 'pages/main/favorites_page.dart';
 import 'pages/settings_page.dart';
@@ -116,10 +116,17 @@ class MyApp extends StatelessWidget {
             const TopicsSelector(),
       ),
       GoRoute(
-        path: '/dashboard/:dashName',
+        path: '/dashboard/:dashName/view',
         builder: (final BuildContext context, final GoRouterState state) =>
-            DashboardPageCertainPage(
-          dashboardName: state.pathParameters['dashName'] ?? '',
+            DashboardPage(
+          dashName: state.pathParameters['dashName'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/dashboard/:dashName/edit',
+        builder: (final BuildContext context, final GoRouterState state) =>
+            DashEditorPage(
+          dashName: state.pathParameters['dashName'] ?? '',
         ),
       ),
     ],
@@ -185,7 +192,7 @@ class MainScreens extends ConsumerWidget {
     ),
     AdaptiveScaffoldDestination(
       icon: Icon(Icons.construction),
-      label: 'Backend',
+      label: 'Commands',
     ),
   ];
 
@@ -198,7 +205,6 @@ class MainScreens extends ConsumerWidget {
           .select((final ConnectionProps it) => it.useMqtt),
     );
     final List<String> dashes = ref.watch(availableDashboardsManagerProvider);
-    print('new dashes: $dashes');
 
     return Scaffold(
       appBar: AppBar(
@@ -276,7 +282,7 @@ class MainScreens extends ConsumerWidget {
           .map(
             (final String dash) => TextButton(
               onPressed: () async {
-                await context.push('/dashboard/$dash');
+                await context.push('/dashboard/$dash/view');
               },
               child: Text(dash),
             ),
