@@ -60,8 +60,15 @@ class _GraphLiveState extends ConsumerState<GraphLive> {
     // initialize all of the packages
     for (final NetFieldCapture<(List<double>, DateTime)> item in widget.items) {
       // also lets build a subscription here
-      info[item.topic] = LiveGraphRenderInfo(item, widget.liveGraphDur)
-        ..beginSubscription();
+      if (item.last?.$1.length == 1) {
+        info['${item.topic} 0'] = LiveGraphRenderInfo(item, 0, widget.liveGraphDur)
+          ..beginSubscription();
+      } else {
+        for (int i = 0; i < (item.last?.$1.length ?? 0); i++) {
+          info['${item.topic} $i'] = LiveGraphRenderInfo(item, i, widget.liveGraphDur)
+            ..beginSubscription();
+        }
+      }
     }
     super.initState();
   }
@@ -83,7 +90,8 @@ class _GraphLiveState extends ConsumerState<GraphLive> {
 
   /// gets all axes.  matches to above via topic name as the axis key
   List<ChartAxis> _fetchAxes() =>
-      info.values.map((final LiveGraphRenderInfo e) => e.getAxis()).toList();
+      info.values.map((final LiveGraphRenderInfo e) => e.getAxis()).nonNulls.toList()
+      ;
 
   @override
   Widget build(final BuildContext context) => SfCartesianChart(
@@ -108,27 +116,28 @@ class ChartData {
 class LiveGraphRenderInfo {
   final NetFieldCapture<(List<double>, DateTime)> item;
   final List<ChartData> data = <ChartData>[];
+  final int index;
   late StreamSubscription<(List<double>, DateTime)> streamSub;
   final Duration windowLength;
 
   ChartSeriesController<ChartData, DateTime>? ctrlr;
 
-  LiveGraphRenderInfo(this.item, this.windowLength);
+  LiveGraphRenderInfo(this.item, this.index, this.windowLength);
 
   /// begin the data subscription
   void beginSubscription() {
     streamSub =
         item.getStream().listen((final (List<double>, DateTime) a) async {
-      addPoint(ChartData(a.$2, a.$1.first), windowLength);
+      addPoint(ChartData(a.$2, a.$1.elementAt(index)), windowLength);
     });
   }
 
   /// get the axes to render
-  NumericAxis getAxis() => NumericAxis(
-        name: item.topic,
+  NumericAxis? getAxis() => index == 0 ? NumericAxis(
+        name: '${item.topic}',
         labelFormat: '{value} ${item.unit}',
-        title: AxisTitle(text: item.topic),
-      );
+        title: AxisTitle(text: '${item.topic}'),
+      ) : null;
 
   /// get the axes, must resolve internally or add point will be useless
   LineSeries<ChartData, DateTime> getSeries() =>
@@ -139,8 +148,8 @@ class LiveGraphRenderInfo {
           ctrlr = controller;
         },
         dataSource: data,
-        name: item.topic,
-        yAxisName: item.topic,
+        name: '${item.topic} $index',
+        yAxisName: '${item.topic}',
         xValueMapper: (final ChartData data, final int index) => data.x,
         yValueMapper: (final ChartData data, final int index) => data.y,
       );

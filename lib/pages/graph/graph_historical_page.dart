@@ -26,6 +26,7 @@ class _GraphHistoricalState extends ConsumerState<GraphHistorical> {
 
   List<ChartAxis> _fetchAxes() => info.values
       .map((final HistoricalGraphRenderInfo e) => e.getAxis())
+      .nonNulls
       .toList();
 
   @override
@@ -42,13 +43,30 @@ class _GraphHistoricalState extends ConsumerState<GraphHistorical> {
           :final Map<String, List<PublicData>> value
         ):
         for (final MapEntry<String, List<PublicData>> entry in value.entries) {
-          info[entry.key] = HistoricalGraphRenderInfo(
-            entry.key,
-            topics
-                .firstWhere((final PublicDataType e) => e.name == entry.key)
-                .unit,
-            entry.value,
-          );
+          if (entry.value.isNotEmpty) {
+            if (entry.value.first.values.length == 1) {
+              info['${entry.key} 0'] = HistoricalGraphRenderInfo(
+                entry.key,
+                0,
+                topics
+                    .firstWhere((final PublicDataType e) => e.name == entry.key)
+                    .unit,
+                entry.value,
+              );
+            } else {
+              for (int i = 0; i < entry.value.first.values.length; i++) {
+                info['${entry.key} $i'] = HistoricalGraphRenderInfo(
+                  entry.key,
+                  i,
+                  topics
+                      .firstWhere(
+                          (final PublicDataType e) => e.name == entry.key)
+                      .unit,
+                  entry.value,
+                );
+              }
+            }
+          }
         }
         return SfCartesianChart(
           zoomPanBehavior: ZoomPanBehavior(
@@ -118,25 +136,28 @@ class ErrorViewer extends ConsumerWidget {
 
 class HistoricalGraphRenderInfo {
   final String topic;
+  final int index;
   final String unit;
   final List<PublicData> data;
 
-  HistoricalGraphRenderInfo(this.topic, this.unit, this.data);
+  HistoricalGraphRenderInfo(this.topic, this.index, this.unit, this.data);
 
   XyDataSeries<PublicData, DateTime> getSeries() =>
       LineSeries<PublicData, DateTime>(
-        name: topic,
+        name: '$topic $index',
         dataSource: data,
         yAxisName: topic,
         xValueMapper: (final PublicData data, final int index) =>
             DateTime.fromMillisecondsSinceEpoch(data.time),
         yValueMapper: (final PublicData data, final int index) =>
-            data.values.first,
+            data.values.elementAt(this.index),
       );
 
-  ChartAxis getAxis() => NumericAxis(
-        name: topic,
-        labelFormat: '{value} $unit',
-        title: AxisTitle(text: topic),
-      );
+  ChartAxis? getAxis() => index == 0
+      ? NumericAxis(
+          name: topic,
+          labelFormat: '{value} $unit',
+          title: AxisTitle(text: topic),
+        )
+      : null;
 }
