@@ -26,7 +26,7 @@ Map<String, dynamic> _$$DashboardConfigImplToJson(
 // **************************************************************************
 
 String _$availableDashboardsManagerHash() =>
-    r'dc8f9f50074a275b1e0c96c57387ba672d848634';
+    r'db0465f7e7ed583b2f39834b091e5dd64ee1cbf5';
 
 /// See also [AvailableDashboardsManager].
 @ProviderFor(AvailableDashboardsManager)

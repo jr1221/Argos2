@@ -4,15 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'global_settings.dart';
+import 'pages/dashboard/dashboard_page.dart';
 import 'pages/graph/graph_page.dart';
 import 'pages/main/argos_settings_page.dart';
 import 'pages/main/car_command_page.dart';
-import 'pages/dashboard/dashboard_page.dart';
 import 'pages/main/data_page.dart';
 import 'pages/main/favorites_page.dart';
+import 'pages/main/rule_manager_page.dart';
+import 'pages/main/rule_notifications_page.dart';
 import 'pages/settings_page.dart';
 import 'persistent_widgets.dart';
 import 'services/dashboard_service.dart';
+import 'services/rule_service.dart';
 
 void main() {
   runApp(
@@ -20,6 +23,20 @@ void main() {
       child: MyApp(),
     ),
   );
+}
+
+class _EagerInitialization extends ConsumerWidget {
+  const _EagerInitialization({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(final BuildContext context, final WidgetRef ref) {
+    // force rules to be init-ed, and their notifications
+    ref
+      ..watch(ruleNotificationsManagerProvider)
+      ..watch(ruleManagerProvider);
+    return child;
+  }
 }
 
 class AdaptiveScaffoldDestination {
@@ -76,6 +93,16 @@ class MyApp extends StatelessWidget {
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
+                path: '/notifications',
+                builder:
+                    (final BuildContext context, final GoRouterState state) =>
+                        const RuleNotificationsPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
                 path: '/settings',
                 builder:
                     (final BuildContext context, final GoRouterState state) =>
@@ -100,6 +127,16 @@ class MyApp extends StatelessWidget {
                 builder:
                     (final BuildContext context, final GoRouterState state) =>
                         const CarCommandPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/rule_manager',
+                builder:
+                    (final BuildContext context, final GoRouterState state) =>
+                        const RuleManagerPage(),
               ),
             ],
           ),
@@ -134,29 +171,31 @@ class MyApp extends StatelessWidget {
 
   // This widget is the root of your application.
   @override
-  Widget build(final BuildContext context) => MaterialApp.router(
-        title: 'Cool',
-        routerConfig: _router,
-        shortcuts:
-            Map<ShortcutActivator, Intent>.from(WidgetsApp.defaultShortcuts)
-              ..addAll(<ShortcutActivator, Intent>{
-                LogicalKeySet(LogicalKeyboardKey.select):
-                    const ActivateIntent(),
-                const SingleActivator(LogicalKeyboardKey.arrowDown):
-                    const DirectionalFocusIntent(TraversalDirection.down),
-                const SingleActivator(LogicalKeyboardKey.arrowUp):
-                    const DismissIntent(),
-                const SingleActivator(LogicalKeyboardKey.arrowLeft):
-                    const PreviousFocusIntent(),
-                const SingleActivator(LogicalKeyboardKey.arrowRight):
-                    const NextFocusIntent(),
-              }),
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFFEF4345),
-            brightness: Brightness.dark,
+  Widget build(final BuildContext context) => _EagerInitialization(
+        child: MaterialApp.router(
+          title: 'Cool',
+          routerConfig: _router,
+          shortcuts:
+              Map<ShortcutActivator, Intent>.from(WidgetsApp.defaultShortcuts)
+                ..addAll(<ShortcutActivator, Intent>{
+                  LogicalKeySet(LogicalKeyboardKey.select):
+                      const ActivateIntent(),
+                  const SingleActivator(LogicalKeyboardKey.arrowDown):
+                      const DirectionalFocusIntent(TraversalDirection.down),
+                  const SingleActivator(LogicalKeyboardKey.arrowUp):
+                      const DismissIntent(),
+                  const SingleActivator(LogicalKeyboardKey.arrowLeft):
+                      const PreviousFocusIntent(),
+                  const SingleActivator(LogicalKeyboardKey.arrowRight):
+                      const NextFocusIntent(),
+                }),
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFFEF4345),
+              brightness: Brightness.dark,
+            ),
+            useMaterial3: true,
           ),
-          useMaterial3: true,
         ),
       );
 }
@@ -179,6 +218,10 @@ class MainScreens extends ConsumerWidget {
       icon: Icon(Icons.star_outlined),
       label: 'Favorites',
     ),
+    AdaptiveScaffoldDestination(
+      icon: Icon(Icons.notifications),
+      label: 'Notifications',
+    ),
   ];
   static const List<AdaptiveScaffoldDestination> end_tabs =
       <AdaptiveScaffoldDestination>[
@@ -193,6 +236,10 @@ class MainScreens extends ConsumerWidget {
     AdaptiveScaffoldDestination(
       icon: Icon(Icons.construction),
       label: 'Commands',
+    ),
+    AdaptiveScaffoldDestination(
+      icon: Icon(Icons.notification_add),
+      label: 'Notification Manager',
     ),
   ];
 
@@ -249,7 +296,8 @@ class MainScreens extends ConsumerWidget {
         selectedIndex: navShell.currentIndex,
         onDestinationSelected: (final int index) {
           navShell.goBranch(index);
-          context.pop(context);
+          // for some reason go_router cant handle this
+          Navigator.pop(context);
         },
         children: tabs
             .map(
@@ -266,7 +314,8 @@ class MainScreens extends ConsumerWidget {
         selectedIndex: navShell.currentIndex - tabs.length,
         onDestinationSelected: (final int index) {
           navShell.goBranch(index + tabs.length);
-          context.pop(context);
+          // for some reason go_router cant handle this
+          Navigator.pop(context);
         },
         children: end_tabs
             .map(

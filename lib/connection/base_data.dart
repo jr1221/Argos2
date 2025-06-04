@@ -12,6 +12,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../global_settings.dart';
 import '../services/datatype_service.dart';
+import '../services/rule_service.dart';
 import 'server_data.pb.dart';
 
 part 'base_data.freezed.dart';
@@ -75,6 +76,8 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
   final bool useMqtt = ref.watch(
     connectionControlProvider.select((final ConnectionProps it) => it.useMqtt),
   );
+
+  final String rulesClientId = ref.watch(ruleClientIdProvider).value ?? '';
 
   MqttServerClient? client;
   io.Socket? socket;
@@ -167,7 +170,8 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
   } else {
     socket = io.io(
       conUri.toString(),
-      io.OptionBuilder().setTransports(<String>['websocket']).build(),
+      io.OptionBuilder().setTransports(<String>['websocket']).setExtraHeaders(
+          <String, dynamic>{'Authorization': rulesClientId},).build(),
     );
     ref.onDispose(() {
       socket?.disconnect();
@@ -228,6 +232,11 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
             ),
           );
         }
+      })
+      ..on('rule_notify', (final dynamic data) {
+        ref
+            .read(ruleNotificationsManagerProvider.notifier)
+            .addNotification(RuleNotification.fromJson(data));
       })
       ..onDisconnect((final _) => print('disconnect'));
 

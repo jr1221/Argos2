@@ -12,3 +12,6 @@ const String DASHBOARD_AXIS_CNT_KEY_PREFIX = 'v1_Axis_Cnt_';
 /// stored as int, number of seconds
 const String LIVE_GRAPH_DURATION_KEY = 'v1_LiveGraphDur';
 const int LIVE_GRAPH_DURATION_DEFAULT = 60;
+
+const String RULE_CLIENTID_KEY = 'v1_RuleClientID';
+const String RULE_DATA_KEY_PREFIX = 'v1_Rule_Data_';
