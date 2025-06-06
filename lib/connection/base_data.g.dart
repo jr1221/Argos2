@@ -6,8 +6,7 @@ part of 'base_data.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ClientDataImpl _$$ClientDataImplFromJson(Map<String, dynamic> json) =>
-    _$ClientDataImpl(
+_ClientData _$ClientDataFromJson(Map<String, dynamic> json) => _ClientData(
       runId: (json['runId'] as num).toInt(),
       name: json['name'] as String,
       unit: json['unit'] as String,
@@ -17,7 +16,7 @@ _$ClientDataImpl _$$ClientDataImplFromJson(Map<String, dynamic> json) =>
       timestamp: (json['timestamp'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$ClientDataImplToJson(_$ClientDataImpl instance) =>
+Map<String, dynamic> _$ClientDataToJson(_ClientData instance) =>
     <String, dynamic>{
       'runId': instance.runId,
       'name': instance.name,

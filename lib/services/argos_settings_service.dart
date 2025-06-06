@@ -113,7 +113,7 @@ class SocketDiscardPercent extends _$SocketDiscardPercent {
 
 /// All of scylla's settings
 @freezed
-class ScyllaSettings with _$ScyllaSettings {
+abstract class ScyllaSettings with _$ScyllaSettings {
   const factory ScyllaSettings({
     required final bool data_upload_disabled,
     required final int batch_upsert_time,

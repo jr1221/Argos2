@@ -6,15 +6,14 @@ part of 'data_service.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$PublicDataImpl _$$PublicDataImplFromJson(Map<String, dynamic> json) =>
-    _$PublicDataImpl(
+_PublicData _$PublicDataFromJson(Map<String, dynamic> json) => _PublicData(
       values: (json['values'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
       time: (json['time'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$PublicDataImplToJson(_$PublicDataImpl instance) =>
+Map<String, dynamic> _$PublicDataToJson(_PublicData instance) =>
     <String, dynamic>{
       'values': instance.values,
       'time': instance.time,

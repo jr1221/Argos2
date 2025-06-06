@@ -15,7 +15,7 @@ part 'global_settings.g.dart';
 
 /// a package of all the current connection properties
 @freezed
-class ConnectionProps with _$ConnectionProps {
+abstract class ConnectionProps with _$ConnectionProps {
   const factory ConnectionProps({
     /// current uri, see [useMqtt] if the uri is [mqttUri] or [socketUri]
     required final Uri uri,
@@ -94,12 +94,13 @@ class ConnectionControl extends _$ConnectionControl {
 
 @riverpod
 class FavoriteTopicsManager extends _$FavoriteTopicsManager {
-  SplayTreeSet<PublicDataType> _topics = SplayTreeSet<PublicDataType>();
+  HashSet<PublicDataType> _topics =
+      HashSet<PublicDataType>();
   @override
-  SplayTreeSet<PublicDataType> build() {
+  HashSet<PublicDataType> build() {
     final AsyncValue<SharedPreferences> prefs =
         ref.watch(sharedPrefsInstanceProvider);
-    _topics = SplayTreeSet<PublicDataType>.from(
+    _topics = HashSet<PublicDataType>.from(
       prefs.value?.getStringList(FAVORITE_TOPICS_KEY)?.map(
                 (final String f) => PublicDataType.fromJson(jsonDecode(f)),
               ) ??

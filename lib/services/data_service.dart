@@ -49,7 +49,7 @@ Future<Map<String, List<PublicData>>> getMultiDataWithRunId(
 
 /// A run, as given from Scylla
 @freezed
-class PublicData with _$PublicData {
+abstract class PublicData with _$PublicData {
   const factory PublicData({
     required final List<double> values,
     required final int time,

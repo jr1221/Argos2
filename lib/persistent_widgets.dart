@@ -17,7 +17,7 @@ class GraphFavoritesButton extends ConsumerWidget {
         message: 'Click to graph all favorited topics on one graph',
         child: ElevatedButton(
           onPressed: () async {
-            final SplayTreeSet<PublicDataType> favTopics =
+            final HashSet<PublicDataType> favTopics =
                 ref.read(favoriteTopicsManagerProvider);
             ref
                 .read(graphTopicsManagerProvider.notifier)

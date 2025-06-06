@@ -12,7 +12,7 @@ part 'dashboard_service.g.dart';
 part 'dashboard_service.freezed.dart';
 
 @freezed
-class DashboardConfig with _$DashboardConfig {
+abstract class DashboardConfig with _$DashboardConfig {
   const factory DashboardConfig({
     required final List<String> topics,
     required final int crossAxisCount,

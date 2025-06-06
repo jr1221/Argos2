@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,133 +10,27 @@ part of 'datatype_service.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
 
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-PublicDataType _$PublicDataTypeFromJson(Map<String, dynamic> json) {
-  return _PublicDataType.fromJson(json);
-}
-
 /// @nodoc
-mixin _$PublicDataType {
-  String get name => throw _privateConstructorUsedError;
-  String get unit => throw _privateConstructorUsedError;
-
-  /// Serializes this PublicDataType to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+mixin _$PublicDataType implements DiagnosticableTreeMixin {
+  String get name;
+  String get unit;
 
   /// Create a copy of PublicDataType
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
   $PublicDataTypeCopyWith<PublicDataType> get copyWith =>
-      throw _privateConstructorUsedError;
-}
+      _$PublicDataTypeCopyWithImpl<PublicDataType>(
+          this as PublicDataType, _$identity);
 
-/// @nodoc
-abstract class $PublicDataTypeCopyWith<$Res> {
-  factory $PublicDataTypeCopyWith(
-          PublicDataType value, $Res Function(PublicDataType) then) =
-      _$PublicDataTypeCopyWithImpl<$Res, PublicDataType>;
-  @useResult
-  $Res call({String name, String unit});
-}
-
-/// @nodoc
-class _$PublicDataTypeCopyWithImpl<$Res, $Val extends PublicDataType>
-    implements $PublicDataTypeCopyWith<$Res> {
-  _$PublicDataTypeCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of PublicDataType
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? unit = null,
-  }) {
-    return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      unit: null == unit
-          ? _value.unit
-          : unit // ignore: cast_nullable_to_non_nullable
-              as String,
-    ) as $Val);
-  }
-}
-
-/// @nodoc
-abstract class _$$PublicDataTypeImplCopyWith<$Res>
-    implements $PublicDataTypeCopyWith<$Res> {
-  factory _$$PublicDataTypeImplCopyWith(_$PublicDataTypeImpl value,
-          $Res Function(_$PublicDataTypeImpl) then) =
-      __$$PublicDataTypeImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String name, String unit});
-}
-
-/// @nodoc
-class __$$PublicDataTypeImplCopyWithImpl<$Res>
-    extends _$PublicDataTypeCopyWithImpl<$Res, _$PublicDataTypeImpl>
-    implements _$$PublicDataTypeImplCopyWith<$Res> {
-  __$$PublicDataTypeImplCopyWithImpl(
-      _$PublicDataTypeImpl _value, $Res Function(_$PublicDataTypeImpl) _then)
-      : super(_value, _then);
-
-  /// Create a copy of PublicDataType
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? unit = null,
-  }) {
-    return _then(_$PublicDataTypeImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      unit: null == unit
-          ? _value.unit
-          : unit // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-@JsonSerializable()
-class _$PublicDataTypeImpl extends _PublicDataType
-    with DiagnosticableTreeMixin {
-  const _$PublicDataTypeImpl({required this.name, required this.unit})
-      : super._();
-
-  factory _$PublicDataTypeImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PublicDataTypeImplFromJson(json);
-
-  @override
-  final String name;
-  @override
-  final String unit;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'PublicDataType(name: $name, unit: $unit)';
-  }
+  /// Serializes this PublicDataType to a JSON map.
+  Map<String, dynamic> toJson();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'PublicDataType'))
       ..add(DiagnosticsProperty('name', name))
@@ -146,7 +41,7 @@ class _$PublicDataTypeImpl extends _PublicDataType
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PublicDataTypeImpl &&
+            other is PublicDataType &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.unit, unit) || other.unit == unit));
   }
@@ -155,41 +50,142 @@ class _$PublicDataTypeImpl extends _PublicDataType
   @override
   int get hashCode => Object.hash(runtimeType, name, unit);
 
-  /// Create a copy of PublicDataType
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  @pragma('vm:prefer-inline')
-  _$$PublicDataTypeImplCopyWith<_$PublicDataTypeImpl> get copyWith =>
-      __$$PublicDataTypeImplCopyWithImpl<_$PublicDataTypeImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PublicDataTypeImplToJson(
-      this,
-    );
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'PublicDataType(name: $name, unit: $unit)';
   }
 }
 
-abstract class _PublicDataType extends PublicDataType {
-  const factory _PublicDataType(
-      {required final String name,
-      required final String unit}) = _$PublicDataTypeImpl;
-  const _PublicDataType._() : super._();
+/// @nodoc
+abstract mixin class $PublicDataTypeCopyWith<$Res> {
+  factory $PublicDataTypeCopyWith(
+          PublicDataType value, $Res Function(PublicDataType) _then) =
+      _$PublicDataTypeCopyWithImpl;
+  @useResult
+  $Res call({String name, String unit});
+}
 
-  factory _PublicDataType.fromJson(Map<String, dynamic> json) =
-      _$PublicDataTypeImpl.fromJson;
+/// @nodoc
+class _$PublicDataTypeCopyWithImpl<$Res>
+    implements $PublicDataTypeCopyWith<$Res> {
+  _$PublicDataTypeCopyWithImpl(this._self, this._then);
+
+  final PublicDataType _self;
+  final $Res Function(PublicDataType) _then;
+
+  /// Create a copy of PublicDataType
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? name = null,
+    Object? unit = null,
+  }) {
+    return _then(_self.copyWith(
+      name: null == name
+          ? _self.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      unit: null == unit
+          ? _self.unit
+          : unit // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _PublicDataType with DiagnosticableTreeMixin implements PublicDataType {
+  const _PublicDataType({required this.name, required this.unit});
+  factory _PublicDataType.fromJson(Map<String, dynamic> json) =>
+      _$PublicDataTypeFromJson(json);
 
   @override
-  String get name;
+  final String name;
   @override
-  String get unit;
+  final String unit;
 
   /// Create a copy of PublicDataType
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PublicDataTypeImplCopyWith<_$PublicDataTypeImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @pragma('vm:prefer-inline')
+  _$PublicDataTypeCopyWith<_PublicDataType> get copyWith =>
+      __$PublicDataTypeCopyWithImpl<_PublicDataType>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$PublicDataTypeToJson(
+      this,
+    );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(DiagnosticsProperty('type', 'PublicDataType'))
+      ..add(DiagnosticsProperty('name', name))
+      ..add(DiagnosticsProperty('unit', unit));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _PublicDataType &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.unit, unit) || other.unit == unit));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, name, unit);
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'PublicDataType(name: $name, unit: $unit)';
+  }
 }
+
+/// @nodoc
+abstract mixin class _$PublicDataTypeCopyWith<$Res>
+    implements $PublicDataTypeCopyWith<$Res> {
+  factory _$PublicDataTypeCopyWith(
+          _PublicDataType value, $Res Function(_PublicDataType) _then) =
+      __$PublicDataTypeCopyWithImpl;
+  @override
+  @useResult
+  $Res call({String name, String unit});
+}
+
+/// @nodoc
+class __$PublicDataTypeCopyWithImpl<$Res>
+    implements _$PublicDataTypeCopyWith<$Res> {
+  __$PublicDataTypeCopyWithImpl(this._self, this._then);
+
+  final _PublicDataType _self;
+  final $Res Function(_PublicDataType) _then;
+
+  /// Create a copy of PublicDataType
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? name = null,
+    Object? unit = null,
+  }) {
+    return _then(_PublicDataType(
+      name: null == name
+          ? _self.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      unit: null == unit
+          ? _self.unit
+          : unit // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+// dart format on

@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -162,12 +160,8 @@ class DataPoint extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final bool isFav = ref.watch(
-      favoriteTopicsManagerProvider.select(
-        (final SplayTreeSet<PublicDataType> it) =>
-            it.contains(item.publicDataType),
-      ),
-    );
+    final bool isFav =
+        ref.watch(favoriteTopicsManagerProvider).contains(item.publicDataType);
     return StreamBuilder<(List<double>, DateTime)>(
       stream: item.getStream(),
       builder: (

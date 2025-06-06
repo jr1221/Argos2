@@ -6,24 +6,37 @@ part of 'rule_service.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$RuleImpl _$$RuleImplFromJson(Map<String, dynamic> json) => _$RuleImpl(
+_RuleBackup _$RuleBackupFromJson(Map<String, dynamic> json) => _RuleBackup(
+      version: (json['version'] as num).toInt(),
+      clientId: json['clientId'] as String,
+      rules: (json['rules'] as List<dynamic>)
+          .map((e) => Rule.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$RuleBackupToJson(_RuleBackup instance) =>
+    <String, dynamic>{
+      'version': instance.version,
+      'clientId': instance.clientId,
+      'rules': instance.rules,
+    };
+
+_Rule _$RuleFromJson(Map<String, dynamic> json) => _Rule(
       id: json['id'] as String,
       topic: json['topic'] as String,
       debounce_time: (json['debounce_time'] as num).toInt(),
       expr: json['expr'] as String,
     );
 
-Map<String, dynamic> _$$RuleImplToJson(_$RuleImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$RuleToJson(_Rule instance) => <String, dynamic>{
       'id': instance.id,
       'topic': instance.topic,
       'debounce_time': instance.debounce_time,
       'expr': instance.expr,
     };
 
-_$RuleNotificationImpl _$$RuleNotificationImplFromJson(
-        Map<String, dynamic> json) =>
-    _$RuleNotificationImpl(
+_RuleNotification _$RuleNotificationFromJson(Map<String, dynamic> json) =>
+    _RuleNotification(
       id: json['id'] as String,
       topic: json['topic'] as String,
       values: (json['values'] as List<dynamic>)
@@ -32,8 +45,7 @@ _$RuleNotificationImpl _$$RuleNotificationImplFromJson(
       time: DateTime.parse(json['time'] as String),
     );
 
-Map<String, dynamic> _$$RuleNotificationImplToJson(
-        _$RuleNotificationImpl instance) =>
+Map<String, dynamic> _$RuleNotificationToJson(_RuleNotification instance) =>
     <String, dynamic>{
       'id': instance.id,
       'topic': instance.topic,
@@ -64,7 +76,7 @@ final ruleClientIdProvider = AutoDisposeProvider<AsyncValue<String>>.internal(
 // ignore: unused_element
 typedef RuleClientIdRef = AutoDisposeProviderRef<AsyncValue<String>>;
 String _$ruleNotificationsManagerHash() =>
-    r'e9ce5e41de4cffd4fe3662c26517da8ba8c0adf2';
+    r'1f096d115c1ccfe3ae40eb6204fe3d0019867182';
 
 /// See also [RuleNotificationsManager].
 @ProviderFor(RuleNotificationsManager)
@@ -81,7 +93,7 @@ final ruleNotificationsManagerProvider = AutoDisposeNotifierProvider<
 
 typedef _$RuleNotificationsManager
     = AutoDisposeNotifier<List<RuleNotification>>;
-String _$ruleManagerHash() => r'c232df8483aee3f5c040a853323ca259a6b0ca22';
+String _$ruleManagerHash() => r'542eafefb23475467302e910f82a57c7bb609f53';
 
 /// See also [RuleManager].
 @ProviderFor(RuleManager)

@@ -6,16 +6,14 @@ part of 'dashboard_service.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$DashboardConfigImpl _$$DashboardConfigImplFromJson(
-        Map<String, dynamic> json) =>
-    _$DashboardConfigImpl(
+_DashboardConfig _$DashboardConfigFromJson(Map<String, dynamic> json) =>
+    _DashboardConfig(
       topics:
           (json['topics'] as List<dynamic>).map((e) => e as String).toList(),
       crossAxisCount: (json['crossAxisCount'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$DashboardConfigImplToJson(
-        _$DashboardConfigImpl instance) =>
+Map<String, dynamic> _$DashboardConfigToJson(_DashboardConfig instance) =>
     <String, dynamic>{
       'topics': instance.topics,
       'crossAxisCount': instance.crossAxisCount,

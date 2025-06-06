@@ -1,6 +1,8 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,6 +47,7 @@ class RuleManagerPage extends ConsumerWidget {
             ),
           ],
         ),
+        const Divider(),
         const Text(
           'Tap a notification to delete it',
           textAlign: TextAlign.center,
@@ -55,10 +58,74 @@ class RuleManagerPage extends ConsumerWidget {
             subtitle: Text(rule.topic),
             trailing: Text(rule.expr),
             leading: Text('Debounce: ${rule.debounce_time}'),
-            onLongPress: ()  async {
+            onLongPress: () async {
               await ref.read(ruleManagerProvider.notifier).deleteRule(rule.id);
             },
-          )
+          ),
+        const Divider(),
+        Wrap(
+          alignment: WrapAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () async {
+                final RuleBackup backup =
+                    ref.read(ruleManagerProvider.notifier).exportRules();
+                await Clipboard.setData(
+                  ClipboardData(text: jsonEncode(backup)),
+                );
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Saved backup data to clipboard'),
+                  ),
+                );
+              },
+              child: const Text('Export current rules'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final RuleBackup backup =
+                    ref.read(ruleManagerProvider.notifier).exportRules();
+                final ClipboardData? data =
+                    await Clipboard.getData('text/plain');
+                if (!context.mounted) return;
+                if (data != null && data.text != null) {
+                  final RuleBackup rules =
+                      RuleBackup.fromJson(jsonDecode(data.text!));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Retrieved valid clipboard content, creating rules',
+                      ),
+                    ),
+                  );
+                  for (final Rule rule in rules.rules) {
+                    await ref
+                        .read(ruleManagerProvider.notifier)
+                        .registerRule(rule);
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Created all rules',
+                      ),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Could not retrieve clipboard content'),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Import rules'),
+            ),
+          ],
+        ),
+        const Text(
+        textAlign: TextAlign.center,
+            'Export and import rules using clipboard content.  Content can also be saved to a file for later use.'),
       ],
     );
   }

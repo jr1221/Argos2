@@ -6,14 +6,13 @@ part of 'datatype_service.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$PublicDataTypeImpl _$$PublicDataTypeImplFromJson(Map<String, dynamic> json) =>
-    _$PublicDataTypeImpl(
+_PublicDataType _$PublicDataTypeFromJson(Map<String, dynamic> json) =>
+    _PublicDataType(
       name: json['name'] as String,
       unit: json['unit'] as String,
     );
 
-Map<String, dynamic> _$$PublicDataTypeImplToJson(
-        _$PublicDataTypeImpl instance) =>
+Map<String, dynamic> _$PublicDataTypeToJson(_PublicDataType instance) =>
     <String, dynamic>{
       'name': instance.name,
       'unit': instance.unit,

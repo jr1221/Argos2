@@ -16,9 +16,22 @@ import '../global_settings.dart';
 part 'rule_service.freezed.dart';
 part 'rule_service.g.dart';
 
+/// A rule export/import
+@freezed
+abstract class RuleBackup with _$RuleBackup {
+  const factory RuleBackup({
+    required final int version,
+    required final String clientId,
+    required final List<Rule> rules,
+  }) = _RuleBackup;
+
+  factory RuleBackup.fromJson(final Map<String, Object?> json) =>
+      _$RuleBackupFromJson(json);
+}
+
 /// A rule, as given from scylla
 @freezed
-class Rule with _$Rule {
+abstract class Rule with _$Rule {
   const factory Rule({
     required final String id,
     required final String topic,
@@ -33,7 +46,7 @@ class Rule with _$Rule {
 
 /// A rule notification
 @freezed
-class RuleNotification with _$RuleNotification {
+abstract class RuleNotification with _$RuleNotification {
   const factory RuleNotification({
     required final String id,
     required final String topic,
@@ -47,14 +60,14 @@ class RuleNotification with _$RuleNotification {
 
 @riverpod
 class RuleNotificationsManager extends _$RuleNotificationsManager {
-  List<RuleNotification> ruleNotifications = <RuleNotification>[];
+  final List<RuleNotification> _ruleNotifications = <RuleNotification>[];
 
   @override
-  List<RuleNotification> build() => ruleNotifications;
+  List<RuleNotification> build() => _ruleNotifications;
 
   void addNotification(final RuleNotification ruleNotification) {
     // remove previous notification of same id
-    ruleNotifications
+    _ruleNotifications
       ..removeWhere(
         (final RuleNotification notif) => notif.id == ruleNotification.id,
       )
@@ -63,7 +76,7 @@ class RuleNotificationsManager extends _$RuleNotificationsManager {
   }
 
   void clearNotifications() {
-    ruleNotifications.clear();
+    _ruleNotifications.clear();
     ref.notifyListeners();
   }
 }
@@ -97,7 +110,7 @@ AsyncValue<String> ruleClientId(final Ref ref) {
 
 @riverpod
 class RuleManager extends _$RuleManager {
-  HashSet<Rule> rules = HashSet<Rule>();
+  final HashSet<Rule> _rules = HashSet<Rule>();
 
   @override
   Future<HashSet<Rule>> build() async {
@@ -107,15 +120,15 @@ class RuleManager extends _$RuleManager {
     for (final String key in prefs
         .getKeys()
         .where((final String s) => s.startsWith(RULE_DATA_KEY_PREFIX))) {
-      rules.add(Rule.fromJson(jsonDecode(prefs.getString(key) ?? '')));
+      _rules.add(Rule.fromJson(jsonDecode(prefs.getString(key) ?? '')));
     }
 
     // send all rules
-    for (final Rule rule in rules) {
+    for (final Rule rule in _rules) {
       await _sendRule(rule);
     }
 
-    return rules;
+    return _rules;
   }
 
   Future<void> _sendRule(final Rule rule) async {
@@ -150,7 +163,9 @@ class RuleManager extends _$RuleManager {
     final SharedPreferences? prefs =
         ref.read(sharedPrefsInstanceProvider).value;
     await prefs?.setString(
-        '$RULE_DATA_KEY_PREFIX-${rule.id}', jsonEncode(rule.toJson()));
+      '$RULE_DATA_KEY_PREFIX-${rule.id}',
+      jsonEncode(rule.toJson()),
+    );
   }
 
   Future<void> _writeDeleteRule(final String ruleId) async {
@@ -160,18 +175,23 @@ class RuleManager extends _$RuleManager {
   }
 
   Future<void> registerRule(final Rule rule) async {
-    rules.add(rule);
+    _rules.add(rule);
     await _sendRule(rule);
     await _writeRule(rule);
 
-    state = AsyncData<HashSet<Rule>>(rules);
+    state = AsyncData<HashSet<Rule>>(_rules);
   }
 
   Future<void> deleteRule(final String ruleId) async {
-    rules.removeWhere((final Rule rule) => rule.id == ruleId);
+    _rules.removeWhere((final Rule rule) => rule.id == ruleId);
     await _sendDeleteRule(ruleId);
     await _writeDeleteRule(ruleId);
 
-    state = AsyncData<HashSet<Rule>>(rules);
+    state = AsyncData<HashSet<Rule>>(_rules);
+  }
+
+  RuleBackup exportRules() {
+    final String clientId = ref.read(ruleClientIdProvider).value ?? 'test';
+    return RuleBackup(version: 1, clientId: clientId, rules: _rules.toList());
   }
 }

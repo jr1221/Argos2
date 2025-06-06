@@ -6,8 +6,7 @@ part of 'run_service.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$PublicRunImpl _$$PublicRunImplFromJson(Map<String, dynamic> json) =>
-    _$PublicRunImpl(
+_PublicRun _$PublicRunFromJson(Map<String, dynamic> json) => _PublicRun(
       id: (json['id'] as num).toInt(),
       locationName: json['locationName'] as String,
       driverName: json['driverName'] as String,
@@ -15,7 +14,7 @@ _$PublicRunImpl _$$PublicRunImplFromJson(Map<String, dynamic> json) =>
       notes: json['notes'] as String,
     );
 
-Map<String, dynamic> _$$PublicRunImplToJson(_$PublicRunImpl instance) =>
+Map<String, dynamic> _$PublicRunToJson(_PublicRun instance) =>
     <String, dynamic>{
       'id': instance.id,
       'locationName': instance.locationName,

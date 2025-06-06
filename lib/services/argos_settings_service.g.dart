@@ -6,8 +6,8 @@ part of 'argos_settings_service.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ScyllaSettingsImpl _$$ScyllaSettingsImplFromJson(Map<String, dynamic> json) =>
-    _$ScyllaSettingsImpl(
+_ScyllaSettings _$ScyllaSettingsFromJson(Map<String, dynamic> json) =>
+    _ScyllaSettings(
       data_upload_disabled: json['data_upload_disabled'] as bool,
       batch_upsert_time: (json['batch_upsert_time'] as num).toInt(),
       ratelimit_mode: (json['ratelimit_mode'] as num).toInt(),
@@ -15,8 +15,7 @@ _$ScyllaSettingsImpl _$$ScyllaSettingsImplFromJson(Map<String, dynamic> json) =>
       socket_discard_percent: (json['socket_discard_percent'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$ScyllaSettingsImplToJson(
-        _$ScyllaSettingsImpl instance) =>
+Map<String, dynamic> _$ScyllaSettingsToJson(_ScyllaSettings instance) =>
     <String, dynamic>{
       'data_upload_disabled': instance.data_upload_disabled,
       'batch_upsert_time': instance.batch_upsert_time,

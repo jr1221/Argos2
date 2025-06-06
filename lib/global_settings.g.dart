@@ -45,12 +45,12 @@ final connectionControlProvider =
 
 typedef _$ConnectionControl = AutoDisposeNotifier<ConnectionProps>;
 String _$favoriteTopicsManagerHash() =>
-    r'b359a7b647b6d27abf9ebe8260fdae83e26098f0';
+    r'4f8381b94914a6f253c73797c5a0b9f5f52e19c6';
 
 /// See also [FavoriteTopicsManager].
 @ProviderFor(FavoriteTopicsManager)
 final favoriteTopicsManagerProvider = AutoDisposeNotifierProvider<
-    FavoriteTopicsManager, SplayTreeSet<PublicDataType>>.internal(
+    FavoriteTopicsManager, HashSet<PublicDataType>>.internal(
   FavoriteTopicsManager.new,
   name: r'favoriteTopicsManagerProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -60,8 +60,7 @@ final favoriteTopicsManagerProvider = AutoDisposeNotifierProvider<
   allTransitiveDependencies: null,
 );
 
-typedef _$FavoriteTopicsManager
-    = AutoDisposeNotifier<SplayTreeSet<PublicDataType>>;
+typedef _$FavoriteTopicsManager = AutoDisposeNotifier<HashSet<PublicDataType>>;
 String _$graphTopicsManagerHash() =>
     r'7a418f8c898e5b2e33d4caffb9f5a5e24ec414ae';
 

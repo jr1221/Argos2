@@ -36,7 +36,7 @@ class RunHandler extends _$RunHandler {
 
 /// A run, as given from Scylla
 @freezed
-class PublicRun with _$PublicRun {
+abstract class PublicRun with _$PublicRun {
   const factory PublicRun({
     required final int id,
     required final String locationName,

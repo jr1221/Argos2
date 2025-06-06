@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,88 +10,67 @@ part of 'data_service.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
 
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-PublicData _$PublicDataFromJson(Map<String, dynamic> json) {
-  return _PublicData.fromJson(json);
-}
-
 /// @nodoc
-mixin _$PublicData {
-  List<double> get values => throw _privateConstructorUsedError;
-  int get time => throw _privateConstructorUsedError;
-
-  /// Serializes this PublicData to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+mixin _$PublicData implements DiagnosticableTreeMixin {
+  List<double> get values;
+  int get time;
 
   /// Create a copy of PublicData
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $PublicDataCopyWith<PublicData> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PublicDataCopyWith<$Res> {
-  factory $PublicDataCopyWith(
-          PublicData value, $Res Function(PublicData) then) =
-      _$PublicDataCopyWithImpl<$Res, PublicData>;
-  @useResult
-  $Res call({List<double> values, int time});
-}
-
-/// @nodoc
-class _$PublicDataCopyWithImpl<$Res, $Val extends PublicData>
-    implements $PublicDataCopyWith<$Res> {
-  _$PublicDataCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  /// Create a copy of PublicData
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
+  $PublicDataCopyWith<PublicData> get copyWith =>
+      _$PublicDataCopyWithImpl<PublicData>(this as PublicData, _$identity);
+
+  /// Serializes this PublicData to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? values = null,
-    Object? time = null,
-  }) {
-    return _then(_value.copyWith(
-      values: null == values
-          ? _value.values
-          : values // ignore: cast_nullable_to_non_nullable
-              as List<double>,
-      time: null == time
-          ? _value.time
-          : time // ignore: cast_nullable_to_non_nullable
-              as int,
-    ) as $Val);
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties
+      ..add(DiagnosticsProperty('type', 'PublicData'))
+      ..add(DiagnosticsProperty('values', values))
+      ..add(DiagnosticsProperty('time', time));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is PublicData &&
+            const DeepCollectionEquality().equals(other.values, values) &&
+            (identical(other.time, time) || other.time == time));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(values), time);
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'PublicData(values: $values, time: $time)';
   }
 }
 
 /// @nodoc
-abstract class _$$PublicDataImplCopyWith<$Res>
-    implements $PublicDataCopyWith<$Res> {
-  factory _$$PublicDataImplCopyWith(
-          _$PublicDataImpl value, $Res Function(_$PublicDataImpl) then) =
-      __$$PublicDataImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $PublicDataCopyWith<$Res> {
+  factory $PublicDataCopyWith(
+          PublicData value, $Res Function(PublicData) _then) =
+      _$PublicDataCopyWithImpl;
   @useResult
   $Res call({List<double> values, int time});
 }
 
 /// @nodoc
-class __$$PublicDataImplCopyWithImpl<$Res>
-    extends _$PublicDataCopyWithImpl<$Res, _$PublicDataImpl>
-    implements _$$PublicDataImplCopyWith<$Res> {
-  __$$PublicDataImplCopyWithImpl(
-      _$PublicDataImpl _value, $Res Function(_$PublicDataImpl) _then)
-      : super(_value, _then);
+class _$PublicDataCopyWithImpl<$Res> implements $PublicDataCopyWith<$Res> {
+  _$PublicDataCopyWithImpl(this._self, this._then);
+
+  final PublicData _self;
+  final $Res Function(PublicData) _then;
 
   /// Create a copy of PublicData
   /// with the given fields replaced by the non-null parameter values.
@@ -100,13 +80,13 @@ class __$$PublicDataImplCopyWithImpl<$Res>
     Object? values = null,
     Object? time = null,
   }) {
-    return _then(_$PublicDataImpl(
+    return _then(_self.copyWith(
       values: null == values
-          ? _value._values
+          ? _self.values
           : values // ignore: cast_nullable_to_non_nullable
               as List<double>,
       time: null == time
-          ? _value.time
+          ? _self.time
           : time // ignore: cast_nullable_to_non_nullable
               as int,
     ));
@@ -115,13 +95,11 @@ class __$$PublicDataImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$PublicDataImpl with DiagnosticableTreeMixin implements _PublicData {
-  const _$PublicDataImpl(
-      {required final List<double> values, required this.time})
+class _PublicData with DiagnosticableTreeMixin implements PublicData {
+  const _PublicData({required final List<double> values, required this.time})
       : _values = values;
-
-  factory _$PublicDataImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PublicDataImplFromJson(json);
+  factory _PublicData.fromJson(Map<String, dynamic> json) =>
+      _$PublicDataFromJson(json);
 
   final List<double> _values;
   @override
@@ -134,14 +112,23 @@ class _$PublicDataImpl with DiagnosticableTreeMixin implements _PublicData {
   @override
   final int time;
 
+  /// Create a copy of PublicData
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'PublicData(values: $values, time: $time)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$PublicDataCopyWith<_PublicData> get copyWith =>
+      __$PublicDataCopyWithImpl<_PublicData>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$PublicDataToJson(
+      this,
+    );
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'PublicData'))
       ..add(DiagnosticsProperty('values', values))
@@ -152,7 +139,7 @@ class _$PublicDataImpl with DiagnosticableTreeMixin implements _PublicData {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PublicDataImpl &&
+            other is _PublicData &&
             const DeepCollectionEquality().equals(other._values, _values) &&
             (identical(other.time, time) || other.time == time));
   }
@@ -162,39 +149,49 @@ class _$PublicDataImpl with DiagnosticableTreeMixin implements _PublicData {
   int get hashCode => Object.hash(
       runtimeType, const DeepCollectionEquality().hash(_values), time);
 
-  /// Create a copy of PublicData
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  @pragma('vm:prefer-inline')
-  _$$PublicDataImplCopyWith<_$PublicDataImpl> get copyWith =>
-      __$$PublicDataImplCopyWithImpl<_$PublicDataImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$PublicDataImplToJson(
-      this,
-    );
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'PublicData(values: $values, time: $time)';
   }
 }
 
-abstract class _PublicData implements PublicData {
-  const factory _PublicData(
-      {required final List<double> values,
-      required final int time}) = _$PublicDataImpl;
-
-  factory _PublicData.fromJson(Map<String, dynamic> json) =
-      _$PublicDataImpl.fromJson;
-
+/// @nodoc
+abstract mixin class _$PublicDataCopyWith<$Res>
+    implements $PublicDataCopyWith<$Res> {
+  factory _$PublicDataCopyWith(
+          _PublicData value, $Res Function(_PublicData) _then) =
+      __$PublicDataCopyWithImpl;
   @override
-  List<double> get values;
-  @override
-  int get time;
+  @useResult
+  $Res call({List<double> values, int time});
+}
+
+/// @nodoc
+class __$PublicDataCopyWithImpl<$Res> implements _$PublicDataCopyWith<$Res> {
+  __$PublicDataCopyWithImpl(this._self, this._then);
+
+  final _PublicData _self;
+  final $Res Function(_PublicData) _then;
 
   /// Create a copy of PublicData
   /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PublicDataImplCopyWith<_$PublicDataImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? values = null,
+    Object? time = null,
+  }) {
+    return _then(_PublicData(
+      values: null == values
+          ? _self._values
+          : values // ignore: cast_nullable_to_non_nullable
+              as List<double>,
+      time: null == time
+          ? _self.time
+          : time // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
 }
+
+// dart format on

@@ -246,7 +246,7 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
 
 /// Socket wire format, JSON
 @freezed
-class ClientData with _$ClientData {
+abstract class ClientData with _$ClientData {
   const factory ClientData({
     required final int runId,
     required final String name,

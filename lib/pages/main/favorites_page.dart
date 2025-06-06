@@ -13,7 +13,7 @@ class FavoritesPage extends ConsumerWidget {
 
   @override
   Widget build(final BuildContext context, final WidgetRef ref) {
-    final SplayTreeSet<PublicDataType> favs =
+    final HashSet<PublicDataType> favs =
         ref.watch(favoriteTopicsManagerProvider);
     if (favs.isEmpty) {
       return RichText(
