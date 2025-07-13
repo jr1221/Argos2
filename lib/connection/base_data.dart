@@ -168,10 +168,11 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
 
     yield* streamController.stream;
   } else {
+    print('CLIENT ID $rulesClientId');
     socket = io.io(
       conUri.toString(),
       io.OptionBuilder().setTransports(<String>['websocket']).setExtraHeaders(
-          <String, dynamic>{'Authorization': rulesClientId},).build(),
+          <String, dynamic>{'NERAuthorization': rulesClientId},).build(),
     );
     ref.onDispose(() {
       socket?.disconnect();
