@@ -57,13 +57,13 @@ Map<String, dynamic> _$RuleNotificationToJson(_RuleNotification instance) =>
 // RiverpodGenerator
 // **************************************************************************
 
-String _$ruleClientIdHash() => r'671ca1e263d30d0c4198b8e2a819e820fe97ce74';
+String _$ruleClientIdHash() => r'9dc0e192baa283e7220ffb641367403fe871a2ab';
 
 /// Get the unique one-time generated client ID for the user
 ///
 /// Copied from [ruleClientId].
 @ProviderFor(ruleClientId)
-final ruleClientIdProvider = AutoDisposeProvider<AsyncValue<String>>.internal(
+final ruleClientIdProvider = AutoDisposeFutureProvider<String>.internal(
   ruleClientId,
   name: r'ruleClientIdProvider',
   debugGetCreateSourceHash:
@@ -74,7 +74,7 @@ final ruleClientIdProvider = AutoDisposeProvider<AsyncValue<String>>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef RuleClientIdRef = AutoDisposeProviderRef<AsyncValue<String>>;
+typedef RuleClientIdRef = AutoDisposeFutureProviderRef<String>;
 String _$ruleNotificationsManagerHash() =>
     r'1f096d115c1ccfe3ae40eb6204fe3d0019867182';
 
@@ -93,7 +93,7 @@ final ruleNotificationsManagerProvider = AutoDisposeNotifierProvider<
 
 typedef _$RuleNotificationsManager
     = AutoDisposeNotifier<List<RuleNotification>>;
-String _$ruleManagerHash() => r'542eafefb23475467302e910f82a57c7bb609f53';
+String _$ruleManagerHash() => r'd5de15dd29aa3be31b8250a516ff293d1f3eee92';
 
 /// See also [RuleManager].
 @ProviderFor(RuleManager)

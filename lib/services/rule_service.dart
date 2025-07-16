@@ -84,27 +84,19 @@ class RuleNotificationsManager extends _$RuleNotificationsManager {
 @riverpod
 
 /// Get the unique one-time generated client ID for the user
-AsyncValue<String> ruleClientId(final Ref ref) {
-  final AsyncValue<SharedPreferences> prefs =
-      ref.watch(sharedPrefsInstanceProvider);
-  switch (prefs) {
-    case AsyncData<SharedPreferences>(:final SharedPreferences value):
-      final String? clientId = value.getString(RULE_CLIENTID_KEY);
-      if (clientId != null) {
-        return AsyncValue<String>.data(clientId);
-      } else {
-        // create client ID for first time, a v1- (base64 of local-randDouble)
-        final String clientIdNew =
-            'v1-${base64Encode('${DateTime.now()}-${Random().nextDouble()}'.codeUnits)}';
-        unawaited(value.setString(RULE_CLIENTID_KEY, clientIdNew));
-        return AsyncValue<String>.data(clientIdNew);
-      }
-    case AsyncLoading<SharedPreferences>():
-      return const AsyncValue<String>.loading();
-    case AsyncError<SharedPreferences>(:final Object error):
-      return AsyncValue<String>.error(error, StackTrace.current);
-    default:
-      return const AsyncValue<String>.loading();
+Future<String> ruleClientId(final Ref ref) async {
+  final SharedPreferences prefs =
+      await ref.watch(sharedPrefsInstanceProvider.future);
+
+  final String? clientId = prefs.getString(RULE_CLIENTID_KEY);
+  if (clientId != null) {
+    return clientId;
+  } else {
+    // create client ID for first time, a v1- (base64 of local-randDouble)
+    final String clientIdNew =
+        'v1-${base64Encode('${DateTime.now()}-${Random().nextDouble()}'.codeUnits)}';
+    unawaited(prefs.setString(RULE_CLIENTID_KEY, clientIdNew));
+    return clientIdNew;
   }
 }
 

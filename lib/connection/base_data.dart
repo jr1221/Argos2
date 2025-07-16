@@ -77,7 +77,7 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
     connectionControlProvider.select((final ConnectionProps it) => it.useMqtt),
   );
 
-  final String rulesClientId = ref.watch(ruleClientIdProvider).value ?? '';
+  final String rulesClientId = await ref.watch(ruleClientIdProvider.future);
 
   MqttServerClient? client;
   io.Socket? socket;
@@ -171,8 +171,9 @@ Stream<Map<String, NetFieldCapture<(List<double>, DateTime)>>> capModelHolder(
     print('CLIENT ID $rulesClientId');
     socket = io.io(
       conUri.toString(),
-      io.OptionBuilder().setTransports(<String>['websocket']).setExtraHeaders(
-          <String, dynamic>{'NERAuthorization': rulesClientId},).build(),
+      io.OptionBuilder().setTransports(<String>['websocket']).setAuth(
+        <dynamic, dynamic>{'token': rulesClientId},
+      ).build(),
     );
     ref.onDispose(() {
       socket?.disconnect();
